@@ -93,3 +93,9 @@ export interface ReactionAsset {
 }
 
 export function reactionAsset(reactToId: string, reactMessage: string): ReactionAsset
+
+export function signalAsset(
+  token: string,
+  provider: 'apns' | 'fcm',
+  action: 'add' | 'remove'
+): SignalMessagePayload

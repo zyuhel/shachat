@@ -20,6 +20,17 @@ export default mergeConfig(
         workbox: {
           maximumFileSizeToCacheInBytes: 5000000 // 5 MiB
         }
+      }),
+      VitePWA({
+        registerType: 'autoUpdate',
+        strategies: 'injectManifest',
+        filename: 'firebase-messaging-sw.js',
+        injectManifest: {
+          injectionPoint: undefined
+        },
+        devOptions: {
+          enabled: true
+        }
       })
     ]
   })

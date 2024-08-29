@@ -35,3 +35,11 @@ export function reactionAsset(reactToId, reactMessage) {
     react_message: reactMessage
   }
 }
+
+export function signalAsset(token, provider, action) {
+  return {
+    token,
+    provider,
+    action
+  }
+}

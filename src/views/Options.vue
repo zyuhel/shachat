@@ -141,7 +141,8 @@
             </v-col>
             <v-col cols="12" class="mt-6">
               <v-checkbox
-                v-model="allowPushNotifications"
+                :model-value="allowPushNotifications"
+                @update:model-value="handlePushNotificationsCheckbox"
                 :label="$t('options.enable_push')"
                 color="grey darken-1"
                 density="comfortable"
@@ -211,8 +212,11 @@ import LanguageSwitcher from '@/components/LanguageSwitcher.vue'
 import CurrencySwitcher from '@/components/CurrencySwitcher.vue'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
+import { sendSignalMessage } from '@/lib/adamant-api'
+import { signalAsset } from '@/lib/adamant-api/asset'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import scrollPosition from '@/mixins/scrollPosition'
+import { requestToken, revokeToken } from '@/notifications'
 
 export default {
   components: {
@@ -314,6 +318,73 @@ export default {
     }
   },
   methods: {
+    async handlePushNotificationsCheckbox(checked) {
+      if (checked) {
+        const token = await requestToken()
+
+        if (!token) {
+          this.$store.dispatch('snackbar/show', {
+            message: 'Unable to retrieve FCM token',
+            timeout: 5000
+          })
+          return
+        }
+
+        const result = await sendSignalMessage(signalAsset(token, 'fcm', 'add'))
+        console.log('Sent signal message transaction (action: add)', result)
+
+        if (!result.success) {
+          this.$store.dispatch('snackbar/show', {
+            message: 'Send signal message transaction failed',
+            timeout: 5000
+          })
+          return
+        }
+
+        this.$store.dispatch('snackbar/show', {
+          message: 'Successfully subscribed to push notifications',
+          timeout: 5000
+        })
+
+        this.allowPushNotifications = checked
+      } else {
+        const token = await requestToken()
+        if (!token) {
+          this.$store.dispatch('snackbar/show', {
+            message: 'Unable to retrieve FCM token',
+            timeout: 5000
+          })
+          return
+        }
+
+        const result = await sendSignalMessage(signalAsset(token, 'fcm', 'remove'))
+        console.log('Sent signal message transaction (action: remove)', result)
+
+        if (!result.success) {
+          this.$store.dispatch('snackbar/show', {
+            message: 'Send signal message transaction failed',
+            timeout: 5000
+          })
+          return
+        }
+
+        const revoked = await revokeToken()
+        if (!revoked) {
+          this.$store.dispatch('snackbar/show', {
+            message: 'Unable to revoke FCM token',
+            timeout: 5000
+          })
+          return
+        }
+
+        this.$store.dispatch('snackbar/show', {
+          message: 'Successfully unsubscribed from push notifications',
+          timeout: 5000
+        })
+
+        this.allowPushNotifications = checked
+      }
+    },
     onSetPassword() {
       this.$store.commit('options/updateOption', {
         key: 'stayLoggedIn',

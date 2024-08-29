@@ -66,6 +66,7 @@
     "ed2curve": "^0.3.0",
     "emoji-mart": "^5.5.2",
     "file-saver": "^2.0.5",
+    "firebase": "^10.12.5",
     "hdkey": "^2.1.0",
     "https-browserify": "^1.0.0",
     "i": "^0.3.7",
@@ -110,7 +111,8 @@
     "web3-eth-accounts": "^4.1.1",
     "web3-eth-contract": "^4.2.0",
     "web3-providers-http": "^4.1.0",
-    "web3-utils": "^4.2.1"
+    "web3-utils": "^4.2.1",
+    "workbox-precaching": "^7.1.0"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
@@ -162,7 +164,7 @@
     "uuid": "^9.0.1",
     "vite": "^5.1.6",
     "vite-plugin-electron": "^0.28.4",
-    "vite-plugin-pwa": "^0.19.8",
+    "vite-plugin-pwa": "^0.20.1",
     "vite-plugin-top-level-await": "^1.4.1",
     "vite-plugin-wasm": "^3.3.0",
     "vitest": "^1.4.0",

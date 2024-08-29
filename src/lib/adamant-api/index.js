@@ -1,7 +1,12 @@
 import Queue from 'promise-queue'
 import { Base64 } from 'js-base64'
 
-import { Transactions, Delegates, MessageType } from '@/lib/constants'
+import {
+  Transactions,
+  Delegates,
+  MessageType,
+  ADAMANT_NOTIFICATION_SERVICE_ADDRESS
+} from '@/lib/constants'
 import utils from '@/lib/adamant'
 import client from '@/lib/nodes/adm'
 import { encryptPassword } from '@/lib/idb/crypto'
@@ -171,6 +176,15 @@ export function sendMessage(params) {
     .catch((reason) => {
       return reason
     })
+}
+
+// https://aips.adamant.im/AIPS/aip-6
+export function sendSignalMessage(asset) {
+  return sendMessage({
+    type: MessageType.SIGNAL_MESSAGE,
+    message: asset,
+    to: ADAMANT_NOTIFICATION_SERVICE_ADDRESS
+  })
 }
 
 /**

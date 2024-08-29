@@ -4,6 +4,7 @@ import { createApp } from 'vue'
 import { VueQueryPlugin } from '@tanstack/vue-query'
 
 import App from './App.vue'
+import './firebase'
 import { router } from './router'
 import store from './store/index.js'
 import { i18n } from './i18n'
