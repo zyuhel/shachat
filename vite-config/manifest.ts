@@ -113,5 +113,224 @@ export const manifest: Partial<ManifestOptions> = {
   scope: 'https://msg.adamant.im',
   categories: ['finance', 'social', 'crypto', 'security', 'blockchain'],
   background_color: '#000000',
-  theme_color: '#4DBA87'
+  theme_color: '#4DBA87',
+
+  screenshots: [
+    {
+      src: '/screenshots/android/0-login.png',
+      sizes: '1334x750',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Login with password',
+      platform: 'android'
+    },
+    {
+      src: '/screenshots/android/screenshot-mobile.png',
+      sizes: '1334x750',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Login',
+      platform: 'android'
+    },
+    {
+      src: '/screenshots/android/1-balances.png',
+      sizes: '1334x750',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Account balance',
+      platform: 'android'
+    },
+    {
+      src: '/screenshots/android/2-exchanges.png',
+      sizes: '1334x750',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Adamant exchanges',
+      platform: 'android'
+    },
+    {
+      src: '/screenshots/android/3-send_funds.png',
+      sizes: '1334x750',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Send funds',
+      platform: 'android'
+    },
+    {
+      src: '/screenshots/android/4-partners.png',
+      sizes: '1334x750',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: "Partner's info",
+      platform: 'android'
+    },
+    {
+      src: '/screenshots/android/5-start_new_chat.png',
+      sizes: '1334x750',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Start new chat',
+      platform: 'android'
+    },
+    {
+      src: '/screenshots/android/6-nodes.png',
+      sizes: '1334x750',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Nodes list',
+      platform: 'android'
+    },
+    {
+      src: '/screenshots/android/7-votes.png',
+      sizes: '1334x750',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Votes',
+      platform: 'android'
+    },
+    {
+      src: '/screenshots/ios/iOS1.png',
+      sizes: '1125x2436',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Chats in light theme',
+      platform: 'ios'
+    },
+    {
+      src: '/screenshots/ios/iOS2.png',
+      sizes: '1125x2436',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Chats in dark theme',
+      platform: 'ios'
+    },
+    {
+      src: '/screenshots/ios/iOS3.png',
+      sizes: '1125x2436',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Adamant exchanges in dark theme',
+      platform: 'ios'
+    },
+    {
+      src: '/screenshots/ios/iOS4.png',
+      sizes: '1125x2436',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Adamant exchanges in light theme',
+      platform: 'ios'
+    },
+    {
+      src: '/screenshots/ios/iOS5.png',
+      sizes: '1125x2436',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Account balance in light theme',
+      platform: 'ios'
+    },
+    {
+      src: '/screenshots/ios/iOS6.png',
+      sizes: '1125x2436',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Account balance in dark theme',
+      platform: 'ios'
+    },
+    {
+      src: '/screenshots/ios/iOS7.png',
+      sizes: '1125x2436',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Send funds in dark theme',
+      platform: 'ios'
+    },
+    {
+      src: '/screenshots/ios/iOS8.png',
+      sizes: '1125x2436',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Send funds in light theme',
+      platform: 'ios'
+    },
+    {
+      src: '/screenshots/ios/iOS9.png',
+      sizes: '1125x2436',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Wallet list in light theme',
+      platform: 'ios'
+    },
+    {
+      src: '/screenshots/ios/iOS10.png',
+      sizes: '1125x2436',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'Wallet list in dark theme',
+      platform: 'ios'
+    },
+    {
+      src: '/screenshots/ios/iOS11.png',
+      sizes: '1125x2436',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'List of nodes in dark theme',
+      platform: 'ios'
+    },
+    {
+      src: '/screenshots/ios/iOS12.png',
+      sizes: '1125x2436',
+      type: 'image/png',
+      form_factor: 'narrow',
+      label: 'List of nodes in light theme',
+      platform: 'ios'
+    },
+    {
+      src: '/screenshots/pwa/pwa1.png',
+      sizes: '1280x800',
+      type: 'image/png',
+      form_factor: 'wide',
+      label: 'Login',
+      platform: 'chromeos'
+    },
+    {
+      src: '/screenshots/pwa/pwa2.png',
+      sizes: '2255x1280',
+      type: 'image/png',
+      form_factor: 'wide',
+      label: 'Adamant exchanges',
+      platform: 'chromeos'
+    },
+    {
+      src: '/screenshots/pwa/pwa3.png',
+      sizes: '2255x1280',
+      type: 'image/png',
+      form_factor: 'wide',
+      label: 'Send funds',
+      platform: 'chromeos'
+    },
+    {
+      src: '/screenshots/pwa/pwa4.png',
+      sizes: '2255x1280',
+      type: 'image/png',
+      form_factor: 'wide',
+      label: 'Account balances',
+      platform: 'chromeos'
+    },
+    {
+      src: '/screenshots/pwa/pwa5.png',
+      sizes: '2255x1280',
+      type: 'image/png',
+      form_factor: 'wide',
+      label: 'Wallet list',
+      platform: 'chromeos'
+    },
+    {
+      src: '/screenshots/pwa/pwa6.png',
+      sizes: '2255x1280',
+      type: 'image/png',
+      form_factor: 'wide',
+      label: 'Start a new chat',
+      platform: 'chromeos'
+    }
+  ]
 }
