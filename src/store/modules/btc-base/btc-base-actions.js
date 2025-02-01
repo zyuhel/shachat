@@ -2,7 +2,12 @@ import BigNumber from '@/lib/bignumber'
 import BtcBaseApi from '../../../lib/bitcoin/btc-base-api'
 import { FetchStatus } from '@/lib/constants'
 import { nodes } from '../../../lib/nodes'
-import { createPendingTransaction, PendingTxStore } from '../../../lib/pending-transactions'
+import {
+  assertNoPendingTransaction,
+  createPendingTransaction,
+  invalidatePendingTransaction,
+  PendingTxStore
+} from '../../../lib/pending-transactions'
 import { storeCryptoAddress } from '../../../lib/store-crypto-address'
 import shouldUpdate from '../../utils/coinUpdatesGuard'
 
@@ -128,12 +133,19 @@ function createActions(options) {
       }
       await nodes[nodeName].assertAnyNodeOnline()
 
-      // 2. Sign transaction offline
+      // 2. Invalidate previous pending transaction if finalized
+      await invalidatePendingTransaction(crypto, async (hashLocal) => {
+        const transaction = await api.getTransaction(hashLocal)
+        return !!transaction && transaction.confirmations > 0
+      })
+
+      // 3. Sign transaction offline
       const signedTransaction = await api.createTransaction(address, amount, fee)
 
-      // 3. Ensure there is no pending transaction (skipped, no nonce in BTC like cryptos)
+      // 4. Ensure there is no pending transaction (skipped, no nonce in BTC like cryptos)
+      await assertNoPendingTransaction(context.state.crypto, 0)
 
-      // 4. Send crypto transfer message to ADM blockchain (if ADM address provided)
+      // 5. Send crypto transfer message to ADM blockchain (if ADM address provided)
       if (admAddress) {
         const msgPayload = {
           address: admAddress,
@@ -152,7 +164,7 @@ function createActions(options) {
         }
       }
 
-      // 5. Save pending transaction
+      // 6. Save pending transaction
       const pendingTransaction = createPendingTransaction({
         hash: signedTransaction.txid,
         senderId: context.state.address,
@@ -163,7 +175,7 @@ function createActions(options) {
       await PendingTxStore.save(context.state.crypto, pendingTransaction)
       context.commit('transactions', [pendingTransaction])
 
-      // 6. Send signed transaction to the blockchain
+      // 7. Send signed transaction to the blockchain
       try {
         const hash = await api.sendTransaction(signedTransaction.hex)
         console.log(

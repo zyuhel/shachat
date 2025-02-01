@@ -19,6 +19,9 @@ export function assertNoPendingTransaction(crypto: string, nonce: string | numbe
   if (nonceProvided && Number(nonce) <= Number(pendingTransaction.nonce)) {
     throw new PendingTransactionError(pendingTransaction, crypto)
   }
+  if (!nonceProvided && !pendingTransaction.confirmations) {
+    throw new PendingTransactionError(pendingTransaction, crypto)
+  }
 }
 
 /**
