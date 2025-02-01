@@ -160,11 +160,11 @@ export class SocketClient extends EventEmitter {
   init(address) {
     this.setAdamantAddress(address)
     this.setSocketReady(true)
-    this.interval = setInterval(() => this.reviseConnection(), this.REVISE_CONNECTION_TIMEOUT)
+    this.interval = setTimeout(() => this.reviseConnection(), this.REVISE_CONNECTION_TIMEOUT)
   }
 
   destroy() {
-    clearInterval(this.interval)
+    clearTimeout(this.interval)
     this.setSocketReady(false)
     this.disconnect()
   }
@@ -194,7 +194,7 @@ export class SocketClient extends EventEmitter {
   }
 
   disconnect() {
-    this.connection && this.connection.close()
+    return this.connection && this.connection.close()
   }
 
   reviseConnection() {
@@ -203,6 +203,7 @@ export class SocketClient extends EventEmitter {
     if (!this.hasActiveNodes) {
       this.disconnect()
       console.warn('[Socket]: No active nodes')
+      this.interval = setTimeout(() => this.reviseConnection(), this.REVISE_CONNECTION_TIMEOUT)
       return
     }
 
@@ -217,6 +218,7 @@ export class SocketClient extends EventEmitter {
       this.connect(node)
       this.subscribeToEvents()
     }
+    this.interval = setTimeout(() => this.reviseConnection(), this.REVISE_CONNECTION_TIMEOUT)
   }
 
   /**

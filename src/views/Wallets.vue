@@ -153,16 +153,19 @@ export default defineComponent({
       }
     })
 
-    const timer = ref<Timer>(setInterval(() => updateBalances(), BALANCE_UPDATE_INTERVAL_MS))
-
-    const updateBalances = () => {
-      store.dispatch('updateBalance', {
-        requestedByUser: true
-      })
-    }
+    let timer = ref<Timer>()
+    ;(async () => {
+      const updateBalances = async () => {
+        await store.dispatch('updateBalance', {
+          requestedByUser: true
+        })
+        timer.value = setTimeout(() => updateBalances(), BALANCE_UPDATE_INTERVAL_MS)
+      }
+      await updateBalances()
+    })()
 
     onBeforeUnmount(() => {
-      clearInterval(timer.value)
+      clearTimeout(timer.value)
     })
 
     return {
