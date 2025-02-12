@@ -5,6 +5,7 @@ import { VueQueryPlugin } from '@tanstack/vue-query'
 
 import App from './App.vue'
 import { router } from './router'
+import { pinia } from '@/plugins/pinia'
 import store from './store/index.js'
 import { i18n } from './i18n'
 import VueFormatters from './lib/formatters'
@@ -26,6 +27,7 @@ app.config.globalProperties.appVersion = packageJSON.version
 
 app.use(router)
 app.use(store)
+app.use(pinia)
 app.use(i18n)
 app.use(vuetify)
 app.use(VueQueryPlugin)

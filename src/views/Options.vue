@@ -213,8 +213,8 @@ import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import scrollPosition from '@/mixins/scrollPosition'
+import { resetPinia } from '@/plugins/pinia'
 import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
-
 
 export default {
   components: {
@@ -353,6 +353,7 @@ export default {
       }
     },
     logout() {
+      resetPinia()
       this.$store.dispatch('stopInterval')
       this.$store.dispatch('logout')
 
