@@ -39,6 +39,10 @@ function getNodeStatusDetail(
     return null
   }
 
+  if (!node.online) {
+    return null;
+  }
+
   if (!node.hasSupportedProtocol) {
     return {
       text: t('nodes.unsupported_reason_protocol')
