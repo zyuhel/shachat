@@ -9,7 +9,7 @@
         :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
       >
       </v-badge>
-      <v-icon :icon="mdiChevronLeft" />
+      <v-icon :icon="mdiArrowLeft" />
     </v-btn>
     <div v-if="!isWelcomeChat(partnerId)">
       <slot name="avatar-toolbar" />
@@ -43,7 +43,7 @@
 <script>
 import partnerName from '@/mixins/partnerName'
 import { isAdamantChat, isWelcomeChat } from '@/lib/chat/meta/utils'
-import { mdiChevronLeft } from '@mdi/js'
+import { mdiArrowLeft } from '@mdi/js'
 
 
 export default {
@@ -57,7 +57,7 @@ export default {
   emits: ['partner-info'],
   setup() {
     return {
-      mdiChevronLeft
+      mdiArrowLeft
     }
   },
   computed: {

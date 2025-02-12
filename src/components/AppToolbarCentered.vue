@@ -4,7 +4,7 @@
       <container>
         <v-toolbar ref="toolbar" :flat="flat" :height="height">
           <v-btn v-if="showBack" icon size="small" @click="goBack">
-            <v-icon :icon="mdiChevronLeft" size="x-large" />
+            <v-icon :icon="mdiArrowLeft" size="x-large" />
           </v-btn>
 
           <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mdiChevronLeft } from '@mdi/js'
+import { mdiArrowLeft } from '@mdi/js'
 
 export default {
   props: {
@@ -55,7 +55,7 @@ export default {
   },
   setup() {
     return {
-      mdiChevronLeft
+      mdiArrowLeft
     }
   },
   computed: {
