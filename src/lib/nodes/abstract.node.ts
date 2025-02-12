@@ -188,11 +188,17 @@ export abstract class Node<C = unknown> {
   getNodeStatus(): NodeStatus {
     if (!this.active) {
       return 'disabled'
-    } else if (!this.hasMinNodeVersion() || !this.hasSupportedProtocol) {
-      return 'unsupported_version'
-    } else if (!this.online) {
+    }
+
+    if (!this.online) {
       return 'offline'
-    } else if (this.outOfSync) {
+    }
+
+    if (!this.hasMinNodeVersion() || !this.hasSupportedProtocol) {
+      return 'unsupported_version'
+    }
+
+    if (this.outOfSync) {
       return 'sync'
     }
 
