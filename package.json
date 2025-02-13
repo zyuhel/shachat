@@ -83,6 +83,7 @@
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "pbkdf2": "^3.1.2",
+    "pinia": "^3.0.0",
     "popmotion": "^11.0.5",
     "promise-queue": "^2.2.5",
     "qrcode": "^1.5.4",

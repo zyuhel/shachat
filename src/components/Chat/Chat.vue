@@ -231,15 +231,15 @@
               class="chat-menu"
               :partner-id="partnerId"
               :reply-to-id="replyMessageId !== -1 ? replyMessageId : undefined"
-              @files="handleFiles"
+              @files="handleAttachments"
             />
           </template>
 
           <template #preview-file>
             <FilesPreview
-              v-if="files.length > 0"
-              :files="files"
-              @remove-item="removeItem"
+              v-if="attachments.list.length > 0"
+              :files="attachments.list"
+              @remove-item="attachments.remove"
               @cancel="cancelPreviewFile"
             />
           </template>
@@ -288,6 +288,7 @@ import { FileData } from '@/lib/files'
 import { emojiWeight } from '@/lib/chat/emoji-weight/emojiWeight'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { vibrate } from '@/lib/vibrate'
+import { useAttachments } from '@/stores/attachments'
 import { computed, nextTick, onBeforeMount, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import Visibility from 'visibilityjs'
 import copyToClipboard from 'copy-to-clipboard'
@@ -341,7 +342,25 @@ const router = useRouter()
 const store = useStore()
 const { t } = useI18n()
 
-const files = ref<FileData[]>([])
+const attachments = useAttachments(props.partnerId)()
+const handleAttachments = (files: FileData[]) => {
+  const maxFileSizeExceeded = files.some(({ file }) => file.size >= UPLOAD_MAX_FILE_SIZE)
+  const maxFileCountExceeded = attachments.list.length + files.length > UPLOAD_MAX_FILE_COUNT
+
+  attachments.add(files)
+
+  if (maxFileCountExceeded) {
+    store.dispatch('snackbar/show', {
+      message: t('chats.max_files', { count: UPLOAD_MAX_FILE_COUNT })
+    })
+  } else if (maxFileSizeExceeded) {
+    store.dispatch('snackbar/show', {
+      message: t('chats.max_file_size', { count: UPLOAD_MAX_FILE_SIZE })
+    })
+  }
+}
+const hasAttachment = computed(() => attachments.list.length > 0)
+
 const loading = ref(false)
 const replyLoadingChatHistory = ref(false)
 const noMoreMessages = ref(false)
@@ -356,7 +375,6 @@ const showEmojiPicker = ref(false)
 
 const messages = computed(() => store.getters['chat/messages'](props.partnerId))
 const userId = computed(() => store.state.address)
-const hasAttachment = computed(() => files.value.length > 0)
 
 const getPartnerName = (address: string) => {
   const name: string = store.getters['partners/displayName'](address) || ''
@@ -483,33 +501,10 @@ const onMessage = (message: string) => {
   sendMessage(message)
   nextTick(() => chatRef.value.scrollToBottom())
   replyMessageId.value = -1
-  files.value = []
-}
-const handleFiles = (filesList: FileData[]) => {
-  files.value = [...files.value, ...filesList]
-
-  const maxFileSizeExceeded = files.value.some(({ file }) => file.size >= UPLOAD_MAX_FILE_SIZE)
-  files.value = files.value.filter((file) => file.file.size < UPLOAD_MAX_FILE_SIZE)
-
-  if (maxFileSizeExceeded) {
-    files.value = files.value.slice(0, UPLOAD_MAX_FILE_COUNT)
-
-    store.dispatch('snackbar/show', {
-      message: t('chats.max_file_size', { count: UPLOAD_MAX_FILE_COUNT })
-    })
-  } else if (files.value.length > UPLOAD_MAX_FILE_COUNT) {
-    files.value = files.value.slice(0, UPLOAD_MAX_FILE_COUNT)
-
-    store.dispatch('snackbar/show', {
-      message: t('chats.max_files', { count: UPLOAD_MAX_FILE_COUNT })
-    })
-  }
-}
-const removeItem = (index: number) => {
-  files.value = files.value.filter((_, i) => i !== index)
+  attachments.$reset()
 }
 const cancelPreviewFile = () => {
-  files.value = []
+  attachments.$reset()
 }
 const onMessageError = (error: string) => {
   switch (error) {
@@ -539,9 +534,9 @@ const sendMessage = (message: string) => {
   store.dispatch('draftMessage/deleteDraft', { partnerId: props.partnerId })
   const replyToId = replyMessageId.value !== -1 ? replyMessageId.value : undefined
 
-  if (files.value.length > 0) {
+  if (attachments.list.length > 0) {
     store.dispatch('chat/sendAttachment', {
-      files: files.value,
+      files: attachments.list,
       message,
       recipientId: props.partnerId,
       replyToId
