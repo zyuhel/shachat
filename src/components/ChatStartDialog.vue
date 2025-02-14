@@ -179,7 +179,8 @@ export default {
     onPasteURI(e) {
       const data = e.clipboardData.getData('text')
       nextTick(() => {
-        const address = parseURIasAIP(data).address
+        const { address } = parseURIasAIP(data)
+
         if (validateAddress('ADM', address)) {
           e.preventDefault()
           this.getInfoFromURI(data)

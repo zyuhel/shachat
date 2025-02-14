@@ -1,7 +1,7 @@
-import { isAddress as isEthAddress, isHexStrict } from 'web3-utils'
+import { isAddress as isEthAddress, isHexStrict } from 'web3-validator'
 import { isValidAddress as isValidBtcAddress } from './bitcoin/bitcoin-utils'
 import * as klayrCryptography from '@klayr/cryptography'
-import { Cryptos, CryptosInfo, isEthBased } from './constants'
+import { Cryptos, CryptosInfo, CryptoSymbol, isEthBased } from './constants'
 
 /**
  * Checks if `address` is a valid address for the specified `crypto`.
@@ -10,7 +10,7 @@ import { Cryptos, CryptosInfo, isEthBased } from './constants'
  * @param {string} address value to check
  * @returns {boolean} `true` if address is valid, `false` otherwise
  */
-export default function validateAddress(crypto, address) {
+export default function validateAddress(crypto: CryptoSymbol, address: string) {
   if (isEthBased(crypto)) {
     return isHexStrict(address) && isEthAddress(address)
   }
@@ -29,7 +29,7 @@ export default function validateAddress(crypto, address) {
   }
 
   for (const [symbol, { regexAddress }] of Object.entries(CryptosInfo)) {
-    if (crypto === symbol) {
+    if (crypto === symbol && regexAddress) {
       return new RegExp(regexAddress).test(address)
     }
   }
