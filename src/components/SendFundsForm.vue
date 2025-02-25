@@ -192,7 +192,7 @@ import klyIndexer from '@/lib/nodes/kly-indexer'
 import { AllNodesDisabledError, AllNodesOfflineError, NoInternetConnectionError } from '@/lib/nodes/utils/errors'
 import { PendingTransactionError } from '@/lib/pending-transactions'
 import axios from 'axios'
-import { nextTick } from 'vue'
+import { computed, nextTick } from 'vue'
 
 import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
@@ -233,6 +233,7 @@ import { AllCryptos } from '@/lib/constants/cryptos'
 import { MAX_UINT64 } from '@klayr/validator'
 
 import { mdiDotsVertical, mdiMenuDown } from '@mdi/js'
+import { useStore } from 'vuex'
 
 
 /**
@@ -284,7 +285,16 @@ export default {
   },
   emits: ['send', 'error'],
   setup() {
+    const store = useStore()
+
+    const isOnline = computed(() => store.getters['isOnline'])
+
+    const checkIsOnline = () => {
+      return navigator.onLine || isOnline.value;
+    }
+
     return {
+      checkIsOnline,
       mdiDotsVertical,
       mdiMenuDown
     }
@@ -804,7 +814,7 @@ export default {
         })
     },
     async sendFunds() {
-      if (!navigator.onLine) {
+      if (!this.checkIsOnline()) {
         throw new NoInternetConnectionError()
       }
 
