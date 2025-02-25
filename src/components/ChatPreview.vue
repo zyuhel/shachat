@@ -111,7 +111,6 @@ import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { TransactionProvider } from '@/providers/TransactionProvider'
 import { mdiArrowLeftTop, mdiDotsHorizontal } from '@mdi/js'
 
-
 const className = 'chat-brief'
 
 export default defineComponent({
@@ -183,7 +182,7 @@ export default defineComponent({
         return `[${t('chats.file', filesCount)}]: ${props.transaction.message}`
       }
 
-      return `[${t('chats.file', filesCount)}]`
+      return `${t('chats.attached')}: ${t('chats.file', filesCount)}`
     })
     const isReaction = computed(() => props.transaction.type === 'reaction')
 

@@ -1,5 +1,5 @@
 import { MessageType } from '@/lib/constants'
-import { FileData } from '@/lib/files'
+import { extractFileExtension, extractFileName, FileData } from '@/lib/files'
 
 interface CryptoTransferPayload {
   cryptoSymbol: string
@@ -207,7 +207,8 @@ export interface AttachmentAsset {
 export function attachmentAsset(files: FileData[], comment?: string): AttachmentAsset {
   return {
     files: files.map(({ file, width, height, cid, preview, encoded }) => {
-      const [name, extension] = file.name.split('.')
+      const name = extractFileName(file.name)
+      const extension = extractFileExtension(file.name)!
       const resolution: FileAsset['resolution'] = width && height ? [width, height] : undefined
 
       return {

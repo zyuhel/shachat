@@ -63,8 +63,7 @@ import AChatImageModalItem from './AChatImageModalItem.vue'
 import AChatModalFile from './AChatModalFile.vue'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { FileAsset } from '@/lib/adamant-api/asset'
-import { mdiArrowCollapseDown,  mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
-
+import { mdiArrowCollapseDown, mdiChevronLeft, mdiChevronRight, mdiClose } from '@mdi/js'
 
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -200,7 +199,9 @@ export default {
           nonce: file.nonce
         })
 
-        const fileName = file.name ? `${file.name}.${file.extension}` : undefined
+        const fileName = file.name
+          ? `${file.name}${file.extension ? '.' + file.extension : ''}`
+          : undefined
         downloadFileByUrl(imageUrl, fileName)
       } catch {
         void store.dispatch('snackbar/show', {
