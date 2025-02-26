@@ -1,4 +1,4 @@
-import { marked } from 'marked'
+import { Marked } from 'marked'
 import DOMPurify from 'dompurify'
 
 // The U+2028 character (LINE SEPARATOR) is sometimes used as a line break, but it is treated as a space in some web environments,
@@ -9,6 +9,8 @@ const LINE_SEPARATOR = /\u2028/g
 // It replaces line breaks with a visual symbol (↵) to indicate where new lines exist in the original text.
 const LINE_BREAK_VISUAL = '↵ '
 
+const marked = new Marked()
+
 marked.setOptions({
   // marked sanitize is deprecated, using DOMPurify
   // sanitize: true,
@@ -18,11 +20,11 @@ marked.setOptions({
 
 const renderer = new marked.Renderer()
 
-renderer.image = function ({ _href, _title, _text }) {
+renderer.image = function () {
   return ''
 }
 
-renderer.link = function ({ href, _title, text }) {
+renderer.link = function ({ href, text }) {
   const linkPattern = /^(eth|bch|bitcoin|https?|s?ftp|magnet|tor|onion|tg):(.*)$/i
   const emailPattern = /^(mailto):[^@]+@[^@]+\.[^@]+$/i
 
@@ -56,7 +58,7 @@ export function sanitizeHTML(text = '') {
  * @returns {string} resulting sanitized HTML
  */
 export function renderMarkdown(text = '') {
-  return marked.parse(sanitizeHTML(text.replace(LINE_SEPARATOR, '\n')))
+  return marked.parse(sanitizeHTML(text.replace(LINE_SEPARATOR, '\n')), { async: false })
 }
 
 /**
@@ -68,7 +70,7 @@ export function renderMarkdown(text = '') {
 export function removeFormats(text = '') {
   const node = document.createElement('div')
   const textWithSymbol = text.replace(/\n/g, '↵ ')
-  node.innerHTML = marked.parse(sanitizeHTML(textWithSymbol))
+  node.innerHTML = marked.parse(sanitizeHTML(textWithSymbol), { async: false })
 
   return node.textContent || node.innerText || ''
 }
@@ -77,7 +79,7 @@ export function formatMessage(text = '') {
   const node = document.createElement('div')
 
   const textWithSymbol = text.replace(/\n/g, LINE_BREAK_VISUAL)
-  node.innerHTML = marked.parse(sanitizeHTML(textWithSymbol))
+  node.innerHTML = marked.parse(sanitizeHTML(textWithSymbol), { async: false })
 
   const textWithoutHtml = node.textContent || node.innerText || ''
 
