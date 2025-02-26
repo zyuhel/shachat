@@ -227,14 +227,6 @@ html {
 
 .a-input .v-field--disabled .v-field__outline::before,
 .a-input .v-field--disabled .v-field__outline::before {
-  border-image: repeating-linear-gradient(
-      90deg,
-      hsla(0, 0%, 100%, 0.5) 0,
-      hsla(0, 0%, 100%, 0.5) 2px,
-      transparent 0,
-      transparent 4px
-    )
-    1 repeat;
   opacity: 1;
 }
 
