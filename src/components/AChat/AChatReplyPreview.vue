@@ -13,7 +13,7 @@
       <v-btn
         @click="$emit('cancel')"
         :class="classes.closeButton"
-        icon="mdi-close"
+        :icon="mdiClose"
         size="24"
         variant="plain"
       />
@@ -30,6 +30,7 @@ import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatMessage } from '@/lib/markdown'
+import { mdiClose } from '@mdi/js'
 
 const className = 'a-chat-reply-preview'
 const classes = {
@@ -86,7 +87,8 @@ export default defineComponent({
       isCryptoTransfer,
       cryptoTransferLabel,
       classes,
-      messageLabel
+      messageLabel,
+      mdiClose
     }
   }
 })

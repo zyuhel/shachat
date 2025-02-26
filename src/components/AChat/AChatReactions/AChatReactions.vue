@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { usePartnerId } from '@/components/AChat/hooks/usePartnerId.ts'
+import { usePartnerId } from '@/components/AChat/hooks/usePartnerId'
 import ChatAvatar from '@/components/Chat/ChatAvatar.vue'
 import { isEmptyReaction, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { computed, defineComponent, PropType, watch } from 'vue'

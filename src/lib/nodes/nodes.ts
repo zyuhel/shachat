@@ -3,6 +3,7 @@ import { btc } from './btc'
 import { dash } from './dash'
 import { doge } from './doge'
 import { eth } from './eth'
+import { ipfs } from './ipfs'
 import { kly } from './kly'
 
 export const nodes = {
@@ -11,5 +12,6 @@ export const nodes = {
   dash,
   doge,
   eth,
+  ipfs,
   kly
 }

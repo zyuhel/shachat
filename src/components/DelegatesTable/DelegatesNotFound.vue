@@ -1,7 +1,7 @@
 <template>
   <tr :class="classes.root">
     <td colspan="3">
-      <v-alert :class="classes.alert" color="rgba(0, 0, 0, 0.54)" icon="mdi-alert">
+      <v-alert :class="classes.alert" color="rgba(0, 0, 0, 0.54)" :icon="mdiAlert">
         Your search for "{{ searchQuery }}" found no results.
       </v-alert>
     </td>
@@ -10,6 +10,7 @@
 
 <script>
 import { defineComponent } from 'vue'
+import { mdiAlert } from '@mdi/js'
 
 export default defineComponent({
   props: {
@@ -26,7 +27,8 @@ export default defineComponent({
     }
 
     return {
-      classes
+      classes,
+      mdiAlert
     }
   }
 })

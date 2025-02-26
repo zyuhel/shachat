@@ -58,6 +58,20 @@
             "url": "https://info.adamant.im",
             "alt_ip": "http://88.198.156.44:44099"
           }
+        ],
+        "ipfs": [
+          {
+            "url": "https://ipfs1test.adamant.im",
+            "alt_ip": "http://194.163.154.252:4000"
+          },
+          {
+            "url": "https://ipfs2test.adamant.im",
+            "alt_ip": "http://154.26.159.245:4000"
+          },
+          {
+            "url": "https://ipfs3test.adamant.im",
+            "alt_ip": "http://109.123.240.102:4000"
+          }
         ]
       },
       "healthCheck": {

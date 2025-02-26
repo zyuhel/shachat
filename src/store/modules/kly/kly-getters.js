@@ -5,12 +5,16 @@ export default {
   ...baseGetters,
 
   fee: (state) => (amount, recipientAddress, data, isNewAccount) => {
-    return estimateFee({
-      amount,
-      data,
-      isNewAccount,
-      nonce: state.nonce
-    })
+    try {
+      return estimateFee({
+        amount,
+        data,
+        isNewAccount,
+        nonce: state.nonce
+      })
+    } catch {
+      return 0
+    }
   },
 
   height(state) {

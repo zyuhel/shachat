@@ -4,6 +4,7 @@
       <v-tab value="adm">{{ t('nodes.tabs.adm_nodes') }}</v-tab>
       <v-tab value="coins">{{ t('nodes.tabs.coin_nodes') }}</v-tab>
       <v-tab value="services">{{ t('nodes.tabs.service_nodes') }}</v-tab>
+      <v-tab value="ipfs">{{ t('nodes.tabs.ipfs_nodes') }}</v-tab>
     </v-tabs>
 
     <v-window v-model="tab">
@@ -16,9 +17,13 @@
       <v-window-item value="services">
         <ServiceNodesTable />
       </v-window-item>
+
+      <v-window-item value="ipfs">
+        <IpfsNodesTable />
+      </v-window-item>
     </v-window>
     <div class="ml-6">
-      <div v-if="tab === 'coins'">
+      <div v-if="tab === 'coins' || tab === 'ipfs'">
         <v-checkbox
           v-model="preferFastestCoinNodeOption"
           :label="t('nodes.fastest_title')"
@@ -92,6 +97,7 @@ import { useStore } from 'vuex'
 import { AdmNodesTable } from './adm'
 import { CoinNodesTable } from './coins'
 import { ServiceNodesTable } from './services'
+import { IpfsNodesTable } from './ipfs'
 
 const className = 'nodes-table'
 const classes = {
@@ -100,13 +106,14 @@ const classes = {
   checkbox: `${className}__checkbox`
 }
 
-type Tab = 'adm' | 'coins' | 'services'
+type Tab = 'adm' | 'coins' | 'services' | 'ipfs'
 
 export default defineComponent({
   components: {
     ServiceNodesTable,
     AdmNodesTable,
-    CoinNodesTable
+    CoinNodesTable,
+    IpfsNodesTable
   },
   setup() {
     const { t } = useI18n()

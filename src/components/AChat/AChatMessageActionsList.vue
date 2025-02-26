@@ -4,7 +4,7 @@
       <v-list-item-title>{{ t('chats.chat_actions.reply') }}</v-list-item-title>
 
       <template #append>
-        <v-icon icon="mdi-reply" />
+        <v-icon :icon="mdiReply" />
       </template>
     </v-list-item>
 
@@ -14,7 +14,7 @@
       <v-list-item-title>{{ t('chats.chat_actions.copy') }}</v-list-item-title>
 
       <template #append>
-        <v-icon icon="mdi-content-copy" />
+        <v-icon :icon="mdiContentCopy" />
       </template>
     </v-list-item>
   </v-list>
@@ -23,6 +23,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { mdiContentCopy,  mdiReply } from '@mdi/js'
+
 
 const className = 'message-actions-list'
 const classes = {
@@ -37,7 +39,9 @@ export default defineComponent({
     return {
       classes,
       t,
-      emit
+      emit,
+      mdiContentCopy,
+      mdiReply
     }
   }
 })

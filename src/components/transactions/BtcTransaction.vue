@@ -8,7 +8,7 @@
     :explorer-link="explorerLink"
     :partner="partnerAdmAddress || ''"
     :query-status="queryStatus"
-    :transaction-status="transactionStatus"
+    :transaction-status="status"
     :inconsistent-status="inconsistentStatus"
     :adm-tx="admTx"
     :crypto="crypto"
@@ -69,7 +69,13 @@ export default defineComponent({
       refetch
     } = useTransactionQuery(props.id)
     const inconsistentStatus = useInconsistentStatus(transaction, props.crypto)
-    const transactionStatus = useTransactionStatus(isFetching, queryStatus, inconsistentStatus)
+    const transactionStatus = computed(() => transaction.value?.status)
+    const status = useTransactionStatus(
+      isFetching,
+      queryStatus,
+      transactionStatus,
+      inconsistentStatus
+    )
     useClearPendingTransaction(props.crypto, transaction)
 
     const admTx = useFindAdmTransaction(props.id)
@@ -125,7 +131,7 @@ export default defineComponent({
       confirmations,
       admTx,
       queryStatus,
-      transactionStatus,
+      status,
       inconsistentStatus
     }
   }

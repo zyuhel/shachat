@@ -1,7 +1,12 @@
 <template>
   <NodesTableContainer>
-    <NodesTableHead hide-socket :label="t('nodes.service')" />
-
+    <NodesTableHead 
+      v-model="isAllNodesChecked" 
+      :indeterminate="isPartiallyChecked" 
+      hide-socket 
+      :label="t('nodes.service')"
+    />
+    
     <tbody>
       <ServiceNodesTableItem
         v-for="node in nodes"
@@ -44,10 +49,25 @@ export default defineComponent({
       return [...arr].sort(sortCoinNodesFn)
     })
 
+    const isAllNodesChecked = computed({
+      get() {
+        return nodes.value.every(node => node.active)
+      },
+      set(value) {
+        store.dispatch('services/toggleAll', {active: value})
+      }
+    })
+
+    const isPartiallyChecked = computed(() => {
+      return nodes.value.some(node => node.active) && nodes.value.some(node => !node.active)
+    })
+
     return {
       t,
       nodes,
-      classes
+      classes,
+      isAllNodesChecked,
+      isPartiallyChecked
     }
   }
 })

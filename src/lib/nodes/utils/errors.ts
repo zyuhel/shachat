@@ -63,3 +63,9 @@ export class AllNodesDisabledError extends Error {
 export function isAllNodesDisabledError(error: Error): error is AllNodesDisabledError {
   return (error as AllNodesDisabledError).code === CODES.ALL_NODES_DISABLED
 }
+
+export class NoInternetConnectionError extends Error {
+  constructor() {
+    super();
+  }
+}

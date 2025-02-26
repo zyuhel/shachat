@@ -23,7 +23,7 @@
             <v-menu v-if="cameras.length > 1" offset-y :class="classes.cameraSelect">
               <template #activator="{ props }">
                 <v-btn variant="text" color="white" v-bind="props">
-                  <v-icon size="x-large" icon="mdi-camera" />
+                  <v-icon size="x-large" :icon="mdiCamera" />
                 </v-btn>
               </template>
               <v-list>
@@ -104,6 +104,7 @@ import { useStore } from 'vuex'
 import type { IScannerControls } from '@zxing/browser'
 
 import { Scanner } from '@/lib/zxing'
+import { mdiCamera } from '@mdi/js'
 
 const className = 'qrcode-scanner-dialog'
 const classes = {
@@ -223,7 +224,8 @@ export default defineComponent({
       noStreamDetails,
       props,
       show,
-      videoElement
+      videoElement,
+      mdiCamera
     }
   }
 })

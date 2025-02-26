@@ -16,6 +16,13 @@
     "incorrect_address": "Incorrect ADM address",
     "no_public_key": "This address is not active yet. Unable to start a chat",
     "unable_to_retrieve_no_public_key": "`Unable to decrypt message: no partner's public key`",
+    "max_files": "You can upload max {count} files",
+    "max_file_size": "Max file size allowed: 10MB",
+    "file": "0 files | 1 file | {n} files | {n} files",
+    "files": "file(s)",
+    "file_loading_error": "Failed to load the file",
+    "image_loading_error": "Failed to load the image",
+    "file_not_found": "File not found",
     "me": "Me",
     "message": "Type a message",
     "message_rejected": "Message rejected",
@@ -99,7 +106,8 @@
   "error": "Error",
   "errors": {
     "something_went_wrong": "Something went wrong. Check the console for details",
-    "all_nodes_offline": "All {crypto} nodes are offline. Try again later",
+    "all_nodes_offline": "No active {crypto} nodes. Review the node list",
+    "all_adm_nodes_offline": "No active ADM nodes to send a message. Review the node list",
     "all_nodes_disabled": "No active {crypto} nodes. Enable at least one"
   },
   "home": {
@@ -122,7 +130,8 @@
     "show_qr_code": "Show QR code",
     "stake_and_earn_btn": "Stake and earn",
     "wallet": "wallet",
-    "wallet_crypto": "{crypto} wallet"
+    "wallet_crypto": "{crypto} wallet",
+    "explorer": "Open in Explorer"
   },
   "warning_on_addresses": {
     "warning": "Warning",
@@ -180,7 +189,7 @@
     "label": "Type",
     "host": "Host",
     "inactive": "Inactive",
-    "sync": "Sync",
+    "sync": "Syncing",
     "ms": "ms",
     "nodeLabelDescription": "Support decentralization and enhance privacy level—<a target=\"_blank\" href=\"https://medium.com/adamant-im/how-to-run-your-adamant-node-on-ubuntu-990e391e8fcc\">run your own ADAMANT node</a>. To add your nodes to the list, you need <a target=\"_blank\" href=\"https://github.com/Adamant-im/adamant-im/\">to deploy web application on separate domain</a>. This limitation refers to Content Security Policy (CSP).",
     "offline": "Offline",
@@ -191,7 +200,8 @@
     "tabs": {
       "adm_nodes": "ADM nodes",
       "coin_nodes": "Coin nodes",
-      "service_nodes": "Service nodes"
+      "service_nodes": "Service nodes",
+      "ipfs_nodes": "IPFS nodes"
     },
     "unsupported": "Unsupported",
     "unsupported_reason_protocol": "HTTP is not allowed",

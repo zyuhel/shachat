@@ -61,7 +61,7 @@ const createSpecificActions = (api) => ({
         commit('setBalanceStatus', FetchStatus.Success)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
-        console.log(err)
+        console.warn(err)
       }
     }
   },
@@ -86,6 +86,7 @@ const createSpecificActions = (api) => ({
         context.commit('balance', Number(utils.toEther(balance.toString())))
         context.commit('setBalanceStatus', FetchStatus.Success)
       })
+      .catch((err) => console.warn(err))
 
     // Current gas price
     void api
@@ -96,6 +97,7 @@ const createSpecificActions = (api) => ({
           fee: +(+utils.calculateFee(DEFAULT_ETH_TRANSFER_GAS_LIMIT, price)).toFixed(8)
         })
       })
+      .catch((err) => console.warn(err))
 
     // Current block number
     void api
@@ -103,6 +105,7 @@ const createSpecificActions = (api) => ({
       .then((number) => {
         context.commit('blockNumber', Number(number))
       })
+      .catch((err) => console.warn(err))
 
     const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)
     setTimeout(() => {

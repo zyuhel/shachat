@@ -190,7 +190,8 @@
     "tabs": {
       "adm_nodes": "ADM节点",
       "coin_nodes": "硬币节点",
-      "service_nodes": "服务节点"
+      "service_nodes": "服务节点",
+      "ipfs_nodes": "IPFS节点"
     },
     "unsupported": "不受欢迎",
     "unsupported_reason_protocol": "不允许HTTP",

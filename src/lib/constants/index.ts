@@ -1,4 +1,14 @@
-import { AllCryptos, AllCryptosOrder, Cryptos, CryptosInfo, CryptosOrder } from './cryptos'
+import {
+  AllCryptos,
+  AllCryptosOrder,
+  Cryptos,
+  CryptosInfo,
+  CryptosOrder,
+  CryptoSymbol
+} from './cryptos'
+
+import { mdiCheck, mdiClockOutline, mdiCloseCircleOutline, mdiAlertOutline, mdiHelpCircleOutline } from '@mdi/js'
+
 
 export const EPOCH = Date.UTC(2017, 8, 2, 17, 0, 0, 0)
 
@@ -13,7 +23,7 @@ export const Transactions = {
   OUT_TRANSFER: 7,
   CHAT_MESSAGE: 8,
   STATE: 9
-}
+} as const
 
 /**
  * @see https://github.com/Adamant-im/adamant/wiki/Message-Types
@@ -21,10 +31,13 @@ export const Transactions = {
 export const MessageType = {
   BASIC_ENCRYPTED_MESSAGE: 1,
   RICH_CONTENT_MESSAGE: 2,
-  cryptoTransferMessage: (cryptoSymbol) => `${cryptoSymbol.toLowerCase()}_transaction`
-}
+  SIGNAL_MESSAGE: 3,
+  cryptoTransferMessage: (cryptoSymbol: string) => `${cryptoSymbol.toLowerCase()}_transaction`
+} as const
 
-export const Rates = {
+export type FiatCurrencySymbol = 'USD' | 'EUR' | 'RUB' | 'CNY' | 'JPY'
+
+export const Rates: Record<FiatCurrencySymbol, FiatCurrencySymbol> = {
   USD: 'USD',
   EUR: 'EUR',
   RUB: 'RUB',
@@ -32,13 +45,16 @@ export const Rates = {
   JPY: 'JPY'
 }
 
-export const RatesNames = {
-  [Rates.USD]: 'USD ($)', // United States Dollar
-  [Rates.EUR]: 'EUR (€)', // Euro
-  [Rates.RUB]: 'RUB (₽)', // Russian Ruble
-  [Rates.CNY]: 'CNY (¥)', // Chinese Yuan
-  [Rates.JPY]: 'JPY (¥)' // Japanese Yen
+export const RatesNames: Record<FiatCurrencySymbol, string> = {
+  USD: 'USD ($)', // United States Dollar
+  EUR: 'EUR (€)', // Euro
+  RUB: 'RUB (₽)', // Russian Ruble
+  CNY: 'CNY (¥)', // Chinese Yuan
+  JPY: 'JPY (¥)' // Japanese Yen
 }
+
+export const UPLOAD_MAX_FILE_COUNT = 5
+export const UPLOAD_MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 
 /** Fees for the misc ADM operations */
 export const Fees = {
@@ -69,29 +85,19 @@ export const WelcomeMessage = {
 }
 
 export const BTC_BASED = Object.freeze([Cryptos.DOGE, Cryptos.DASH, Cryptos.BTC])
-
 export const KLY_BASED = Object.freeze([Cryptos.KLY])
-
 export const INSTANT_SEND = Object.freeze([Cryptos.DASH])
+export const ALLOW_TEXT_DATA = Object.freeze([Cryptos.KLY]) // Some blockchains allow storing a text message within a Tx
 
-// Some cryptos allows to save public data with a Tx
-export const ALLOW_TEXT_DATA = Object.freeze([Cryptos.KLY])
-
-export const isErc20 = (crypto) => CryptosInfo[crypto]?.type === 'ERC20'
-
-export const isEthBased = (crypto) => isErc20(crypto) || crypto === Cryptos.ETH
-
-export const isFeeEstimate = (crypto) => isEthBased(crypto)
-
-export const isBtcBased = (crypto) => BTC_BASED.includes(crypto)
-
-export const isKlyBased = (crypto) => KLY_BASED.includes(crypto)
-
-export const isSelfTxAllowed = (crypto) => KLY_BASED.includes(crypto) || crypto === Cryptos.ADM
-
-export const isInstantSendPossible = (crypto) => INSTANT_SEND.includes(crypto)
-
-export const isTextDataAllowed = (crypto) => ALLOW_TEXT_DATA.includes(crypto)
+export const isErc20 = (crypto: CryptoSymbol) => CryptosInfo[crypto]?.type === 'ERC20'
+export const isEthBased = (crypto: CryptoSymbol) => isErc20(crypto) || crypto === Cryptos.ETH
+export const isFeeEstimate = (crypto: CryptoSymbol) => isEthBased(crypto)
+export const isBtcBased = (crypto: CryptoSymbol) => BTC_BASED.includes(crypto)
+export const isKlyBased = (crypto: CryptoSymbol) => KLY_BASED.includes(crypto)
+export const isSelfTxAllowed = (crypto: CryptoSymbol) =>
+  KLY_BASED.includes(crypto) || crypto === Cryptos.ADM
+export const isInstantSendPossible = (crypto: CryptoSymbol) => INSTANT_SEND.includes(crypto)
+export const isTextDataAllowed = (crypto: CryptoSymbol) => ALLOW_TEXT_DATA.includes(crypto)
 
 export const RE_KLY_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
 
@@ -102,14 +108,14 @@ export const RE_KLY_ADDRESS_LEGACY = /^[0-9]{2,21}L$/
  */
 
 /** Gas limit value for the ETH transfers */
-export const DEFAULT_ETH_TRANSFER_GAS_LIMIT = CryptosInfo['ETH'].defaultGasLimit
+export const DEFAULT_ETH_TRANSFER_GAS_LIMIT = (CryptosInfo['ETH'] as any).defaultGasLimit // @todo fix type in adamant-wallets
 /** Gas limit value for the ERC-20 transfers */
 export const DEFAULT_ERC20_TRANSFER_GAS_LIMIT = DEFAULT_ETH_TRANSFER_GAS_LIMIT * 2.4
 
 /** Increase fee multiplier. Used as a checkbox on SendFundsForm */
 export const INCREASE_FEE_MULTIPLIER = 1.5
 
-export { AllCryptos, AllCryptosOrder, Cryptos, CryptosInfo, CryptosOrder }
+export { AllCryptos, AllCryptosOrder, Cryptos, CryptosInfo, CryptosOrder, type CryptoSymbol }
 
 export default {
   EPOCH,
@@ -126,8 +132,16 @@ export const UserPasswordHashSettings = {
   DIGEST: 'sha512'
 }
 
+export type TransactionStatusType =
+  | 'CONFIRMED'
+  | 'PENDING'
+  | 'REGISTERED'
+  | 'REJECTED'
+  | 'INVALID'
+  | 'UNKNOWN'
+
 /** Status of ADM or coin transaction */
-export const TransactionStatus = {
+export const TransactionStatus: Record<TransactionStatusType, TransactionStatusType> = {
   CONFIRMED: 'CONFIRMED', // Tx has at least 1 network confirmation
   PENDING: 'PENDING', // We don't know about this Tx anything yet, it may not exist in a blockchain
   REGISTERED: 'REGISTERED', // This Ts is seen on a blockchain, but has 0 confirmations yet
@@ -143,21 +157,29 @@ export const TransactionAdditionalStatus = {
   ADM_REGISTERED: 'adm_registered' // ADM tx, registered in a blockchain, but has 0 confirmations yet
 }
 
-export const tsIcon = function (status) {
+export const tsIcon = function (status: TransactionStatusType) {
   if (status === TransactionStatus.CONFIRMED) {
-    return 'mdi-check'
-  } else if (status === TransactionStatus.PENDING || status === TransactionStatus.REGISTERED) {
-    return 'mdi-clock-outline'
-  } else if (status === TransactionStatus.REJECTED) {
-    return 'mdi-close-circle-outline'
-  } else if (status === TransactionStatus.INVALID) {
-    return 'mdi-alert-outline'
-  } else if (status === TransactionStatus.UNKNOWN) {
-    return 'mdi-help-circle-outline'
+    return mdiCheck
+  }
+
+  if (status === TransactionStatus.PENDING || status === TransactionStatus.REGISTERED) {
+    return mdiClockOutline
+  }
+
+  if (status === TransactionStatus.REJECTED) {
+    return mdiCloseCircleOutline
+  }
+
+  if (status === TransactionStatus.INVALID) {
+    return mdiAlertOutline
+  }
+
+  if (status === TransactionStatus.UNKNOWN) {
+    return mdiHelpCircleOutline
   }
 }
 
-export const tsColor = function (status) {
+export const tsColor = function (status: TransactionStatusType) {
   if (status === TransactionStatus.REJECTED) {
     return 'red'
   } else if (status === TransactionStatus.INVALID || status === TransactionStatus.UNKNOWN) {
@@ -166,8 +188,9 @@ export const tsColor = function (status) {
   return ''
 }
 
-export const tsUpdatable = function (status, currency) {
-  currency = currency.toUpperCase()
+export const tsUpdatable = function (status: TransactionStatusType, currency: CryptoSymbol) {
+  currency = currency.toUpperCase() as CryptoSymbol
+
   if (currency === Cryptos.ADM) {
     return false
   } else if (status === TransactionStatus.CONFIRMED) {
@@ -188,7 +211,7 @@ export const tsUpdatable = function (status, currency) {
  * @param {string} crypto crypto
  * @returns {number}
  */
-export function getMinAmount(crypto) {
+export function getMinAmount(crypto: CryptoSymbol) {
   let amount = CryptosInfo[crypto].minTransferAmount
 
   if (!amount) {
@@ -210,7 +233,7 @@ export const FetchStatus = {
   Loading: 'loading',
   Success: 'success',
   Error: 'error'
-}
+} as const
 
 export const REACT_EMOJIS = {
   FACE_WITH_TEARS_OF_JOY: '😂',
@@ -225,4 +248,4 @@ export const REACT_EMOJIS = {
   FOLDED_HANDS: '🙏',
   FLUSHED_FACE: '😳',
   PARTY_POPPER: '🎉'
-}
+} as const

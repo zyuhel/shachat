@@ -1,13 +1,14 @@
 <template>
-  <v-form ref="form" class="login-form" @submit.prevent="submit">
+  <v-form ref="form" :class="classes.root" @submit.prevent="submit">
     <v-row no-gutters>
       <slot>
+        <!--     Todo: check src/components/PasswordSetDialog.vue component and consider the possibility to move common code to new component  -->
         <v-text-field
           v-model="passphrase"
           :label="$t('login.password_label')"
           autocomplete="current-password"
+          :class="classes.textField"
           class="text-center"
-          color="white"
           :type="showPassphrase ? 'text' : 'password'"
           variant="underlined"
         >
@@ -19,7 +20,7 @@
               :size="28"
               variant="plain"
             >
-              <v-icon :icon="showPassphrase ? 'mdi-eye' : 'mdi-eye-off'" :size="24" />
+              <v-icon :icon="showPassphrase ? mdiEye : mdiEyeOff" :size="24" />
             </v-btn>
           </template>
         </v-text-field>
@@ -59,6 +60,14 @@ import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { isAxiosError } from 'axios'
 import { isAllNodesOfflineError, isAllNodesDisabledError } from '@/lib/nodes/utils/errors'
+import { mdiEye, mdiEyeOff } from '@mdi/js'
+
+
+const className = 'login-form'
+const classes = {
+  root: className,
+  textField: `${className}__textfield`
+}
 
 export default defineComponent({
   props: {
@@ -73,7 +82,6 @@ export default defineComponent({
     const store = useStore()
     const { t } = useI18n()
     const showSpinner = ref(false)
-
     const showPassphrase = ref(false)
     const togglePassphraseVisibility = () => {
       showPassphrase.value = !showPassphrase.value
@@ -88,23 +96,26 @@ export default defineComponent({
       }
     })
 
+    const isOnline = computed(() => store.getters['isOnline'])
+
     const submit = () => {
       if (!validateMnemonic(passphrase.value)) {
         return emit('error', t('login.invalid_passphrase'))
       }
-
       freeze()
       login()
     }
     const login = () => {
       const promise = store.dispatch('login', passphrase.value)
-
       promise
         .then(() => {
           emit('login')
         })
         .catch((err) => {
-          if (isAxiosError(err)) {
+          if (!isOnline.value) {
+            emit('error', t('connection.offline'))
+            router.push({ name: 'Nodes' })
+          } else if (isAxiosError(err)) {
             emit('error', t('login.invalid_passphrase'))
           } else if (isAllNodesOfflineError(err)) {
             emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
@@ -133,12 +144,34 @@ export default defineComponent({
       showSpinner,
       passphrase,
       showPassphrase,
+      classes,
+      mdiEye,
+      mdiEyeOff,
       togglePassphraseVisibility,
-      submit,
-      freeze,
-      antiFreeze,
-      login
+      submit
     }
   }
 })
 </script>
+
+<style lang="scss" scoped>
+@import 'vuetify/settings';
+@import '@/assets/styles/settings/_colors.scss';
+
+/** Themes **/
+.v-theme--light {
+  .login-form {
+    &__textfield {
+      color: map-get($adm-colors, 'regular');
+    }
+  }
+}
+.v-theme--dark {
+  .login-form {
+    &__textfield {
+      color: map-get($shades, 'white');
+    }
+  }
+}
+
+</style>

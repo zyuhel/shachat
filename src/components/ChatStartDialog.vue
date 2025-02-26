@@ -22,7 +22,7 @@
           <template #append-inner>
             <v-menu :offset-overflow="true" :offset-y="false" left eager>
               <template #activator="{ props }">
-                <v-icon v-bind="props" icon="mdi-dots-vertical" />
+                <v-icon v-bind="props" :icon="mdiDotsVertical" />
               </template>
               <v-list>
                 <v-list-item @click="showQrcodeScanner = true">
@@ -74,6 +74,7 @@ import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import QrcodeRendererDialog from '@/components/QrcodeRendererDialog.vue'
 import partnerName from '@/mixins/partnerName'
+import { mdiDotsVertical } from '@mdi/js'
 
 export default {
   components: {
@@ -92,6 +93,11 @@ export default {
     }
   },
   emits: ['start-chat', 'error', 'update:modelValue'],
+  setup() {
+    return {
+      mdiDotsVertical
+    }
+  },
   data: () => ({
     recipientAddress: '',
     recipientName: '',
@@ -173,7 +179,8 @@ export default {
     onPasteURI(e) {
       const data = e.clipboardData.getData('text')
       nextTick(() => {
-        const address = parseURIasAIP(data).address
+        const { address } = parseURIasAIP(data)
+
         if (validateAddress('ADM', address)) {
           e.preventDefault()
           this.getInfoFromURI(data)

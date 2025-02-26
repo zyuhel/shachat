@@ -3,11 +3,11 @@
     <container>
       <div :class="`${className}__buttons`">
         <div class="text-right">
-          <language-switcher prepend-icon="mdi-chevron-right" />
+          <language-switcher :prepend-icon="mdiChevronRight" />
         </div>
         <div :class="`${className}__settings-button`">
-          <v-btn @click="$router.push('/options/nodes')" icon variant="flat" :size="32">
-            <v-icon icon="mdi-cog" />
+          <v-btn @click="$router.push('/options/nodes')" icon variant="plain" :size="32">
+            <v-icon :icon="mdiCog" />
           </v-btn>
         </div>
       </div>
@@ -106,6 +106,7 @@ import LoginPasswordForm from '@/components/LoginPasswordForm.vue'
 import Logo from '@/components/icons/common/Logo.vue'
 import { navigateByURI } from '@/router/navigationGuard'
 import { useI18n } from 'vue-i18n'
+import { mdiCog, mdiChevronRight } from '@mdi/js'
 
 export default defineComponent({
   components: {
@@ -178,6 +179,8 @@ export default defineComponent({
       isLoginViaPassword,
       t,
       loginForm,
+      mdiCog,
+      mdiChevronRight,
       onDetectQrcode,
       onDetectQrcodeError,
       onLogin,
@@ -229,7 +232,8 @@ export default defineComponent({
   .login-page {
     &__icon,
     &__title,
-    &__subtitle {
+    &__subtitle,
+    &__settings-button {
       color: map-get($adm-colors, 'regular');
     }
   }

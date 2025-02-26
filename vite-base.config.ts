@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 import wasm from 'vite-plugin-wasm'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import path from 'path'
@@ -16,6 +17,7 @@ export default defineConfig({
     wasm(),
     topLevelAwait(),
     vue(),
+    vueJsx(),
     commonjs(),
     inject({
       Buffer: ['buffer', 'Buffer']
@@ -48,7 +50,7 @@ export default defineConfig({
       os: 'os-browserify/browser',
       assert: 'assert'
     },
-    extensions: ['.ts', '.js', '.json', '.vue']
+    extensions: ['.tsx', '.ts', '.js', '.json', '.vue']
   },
   server: {
     port: 8080
@@ -69,7 +71,16 @@ export default defineConfig({
       include: []
     },
     rollupOptions: {
-      external: [...excludeBip39Wordlists()]
+      external: [...excludeBip39Wordlists()],
+      output: {
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name.startsWith('materialdesignicons-webfont')) {
+            return 'assets/[name][extname]'
+          }
+
+          return 'assets/[name]-[hash][extname]'
+        }
+      }
     }
   }
 })

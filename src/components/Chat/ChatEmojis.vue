@@ -8,7 +8,7 @@
     transition="slide-y-reverse-transition"
   >
     <template #activator="{ props }">
-      <v-icon class="chat-emojis__icon" icon="mdi-emoticon-outline" size="28" v-bind="props" />
+      <v-icon class="chat-emojis__icon" :icon="mdiEmoticonOutline" size="28" v-bind="props" />
     </template>
 
     <emoji-picker @emoji:select="getEmoji" position="absolute"></emoji-picker>
@@ -16,6 +16,9 @@
 </template>
 <script>
 import EmojiPicker from '@/components/EmojiPicker.vue'
+
+import { mdiEmoticonOutline } from '@mdi/js'
+
 export default {
   props: {
     open: {
@@ -24,6 +27,11 @@ export default {
     }
   },
   emits: ['onChange', 'get-emoji-picture'],
+  setup() {
+    return {
+      mdiEmoticonOutline
+    }
+  },
   methods: {
     getEmoji(emoji) {
       this.$emit('get-emoji-picture', emoji)

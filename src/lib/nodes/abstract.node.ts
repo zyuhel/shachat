@@ -94,6 +94,7 @@ export abstract class Node<C = unknown> {
   timer?: NodeJS.Timeout
   healthCheckInterval: HealthcheckInterval = 'normal'
   client: C
+  healthcheckInProgress = false
 
   constructor(
     url: string,
@@ -125,16 +126,18 @@ export abstract class Node<C = unknown> {
   async startHealthcheck() {
     clearInterval(this.timer)
 
-    // Check health only for enabled nodes
-    if (this.active) {
+    if (this.active && !this.healthcheckInProgress) {
       try {
+        this.healthcheckInProgress = true
         const health = await this.checkHealth()
 
         this.height = health.height
         this.ping = health.ping
         this.online = true
-      } catch (err) {
+      } catch {
         this.online = false
+      } finally {
+        this.healthcheckInProgress = false
       }
 
       this.fireStatusChange()
@@ -142,11 +145,7 @@ export abstract class Node<C = unknown> {
 
     this.timer = setTimeout(
       () => this.startHealthcheck(),
-      getHealthCheckInterval(
-        this.type,
-        this.kind,
-        this.online ? this.healthCheckInterval : 'crucial'
-      )
+      getHealthCheckInterval(this.label, this.online ? this.healthCheckInterval : 'crucial')
     )
   }
 
@@ -184,18 +183,25 @@ export abstract class Node<C = unknown> {
       height: this.height,
       status: this.getNodeStatus(),
       type: this.type,
-      label: this.label
+      label: this.label,
+      formattedHeight: this.formatHeight(this.height)
     }
   }
 
   getNodeStatus(): NodeStatus {
     if (!this.active) {
       return 'disabled'
-    } else if (!this.hasMinNodeVersion() || !this.hasSupportedProtocol) {
-      return 'unsupported_version'
-    } else if (!this.online) {
+    }
+
+    if (!this.online) {
       return 'offline'
-    } else if (this.outOfSync) {
+    }
+
+    if (!this.hasMinNodeVersion() || !this.hasSupportedProtocol) {
+      return 'unsupported_version'
+    }
+
+    if (this.outOfSync) {
       return 'sync'
     }
 
@@ -227,6 +233,10 @@ export abstract class Node<C = unknown> {
 
   displayVersion() {
     return this.version ? `v${this.version}` : ''
+  }
+
+  formatHeight(height: number) {
+    return height.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
 
   // This method is not abstract because Not all nodes need version checking (For example: indexers) or some nodes receive version information from healthcheck requests.

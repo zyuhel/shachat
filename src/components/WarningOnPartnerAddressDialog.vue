@@ -15,7 +15,7 @@
 
       <v-col cols="12" class="text-center">
         <v-btn :class="[`${className}__btn-hide`, 'a-btn-primary']" @click="hide()">
-          <v-icon :class="`${className}__btn-icon`" icon="mdi-alert" />
+          <v-icon :class="`${className}__btn-icon`" :icon="mdiAlert" />
           <div :class="`${className}__btn-text`">
             {{ $t('transfer.warning_on_partner_address.hide_button') }}
           </div>
@@ -27,6 +27,7 @@
 
 <script>
 import DOMPurify from 'dompurify'
+import { mdiAlert } from '@mdi/js'
 
 export default {
   props: {
@@ -40,6 +41,11 @@ export default {
     }
   },
   emits: ['update:modelValue'],
+  setup() {
+    return {
+      mdiAlert
+    }
+  },
   computed: {
     className: () => 'warning-on-partner-address-dialog',
     show: {

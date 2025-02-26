@@ -16,7 +16,7 @@
         [classes.iconGrey]: nodeStatusColor === 'grey'
       }"
       :color="nodeStatusColor"
-      icon="mdi-checkbox-blank-circle"
+      :icon="mdiCheckboxBlankCircle"
       size="small"
     />
   </div>
@@ -32,6 +32,8 @@ import { defineComponent, PropType, toRefs } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { NodeStatusResult } from '@/lib/nodes/abstract.node'
 import { useNodeStatus } from '@/components/nodes/hooks'
+import { mdiCheckboxBlankCircle } from '@mdi/js'
+
 
 const className = 'node-status'
 const classes = {
@@ -63,7 +65,8 @@ export default defineComponent({
       nodeStatusTitle,
       nodeStatusDetail,
       nodeStatusColor,
-      classes
+      classes,
+      mdiCheckboxBlankCircle
     }
   }
 })

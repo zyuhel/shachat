@@ -4,7 +4,7 @@ import { useStore } from 'vuex'
 
 import { formatMarkdown } from '@/filters/formatMarkdown'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
-import { usePartnerId } from '@/components/AChat/hooks/usePartnerId.ts'
+import { usePartnerId } from '@/components/AChat/hooks/usePartnerId'
 
 export function useFormatMessage(transaction: NormalizedChatMessageTransaction) {
   const store = useStore()

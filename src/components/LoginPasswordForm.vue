@@ -42,9 +42,14 @@
 </template>
 
 <script>
-import { clearDb } from '@/lib/idb'
+import { isAxiosError } from 'axios'
 import { computed, defineComponent, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
+import { useI18n } from 'vue-i18n'
+
+import { clearDb } from '@/lib/idb'
+import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
 export default defineComponent({
   props: {
@@ -55,7 +60,9 @@ export default defineComponent({
   },
   emits: ['login', 'error', 'update:modelValue'],
   setup(props, { emit }) {
+    const router = useRouter()
     const store = useStore()
+    const { t } = useI18n()
     const passwordField = ref(null)
     const showSpinner = ref(false)
 
@@ -68,6 +75,8 @@ export default defineComponent({
       }
     })
 
+    const isOnline = computed(() => store.getters['isOnline'])
+
     const submit = () => {
       showSpinner.value = true
 
@@ -76,8 +85,23 @@ export default defineComponent({
         .then(() => {
           emit('login')
         })
-        .catch(() => {
-          emit('error', 'login_via_password.incorrect_password')
+        .catch((err) => {
+          if (!isOnline.value) {
+            emit('error', t('connection.offline'))
+            router.push({ name: 'Nodes' })
+          } else if (err?.message === 'Invalid password') {
+            emit('error', t('login_via_password.incorrect_password'))
+          } else if (isAxiosError(err)) {
+            emit('error', t('login.invalid_passphrase'))
+          } else if (isAllNodesOfflineError(err)) {
+            emit('error', t('errors.all_nodes_offline', { crypto: err.nodeLabel.toUpperCase() }))
+          } else if (isAllNodesDisabledError(err)) {
+            emit('error', t('errors.all_nodes_disabled', { crypto: err.nodeLabel.toUpperCase() }))
+            router.push({ name: 'Nodes' })
+          } else {
+            emit('error', t('errors.something_went_wrong'))
+          }
+          console.log(err)
         })
         .finally(() => {
           showSpinner.value = false

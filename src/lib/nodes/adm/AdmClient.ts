@@ -1,5 +1,6 @@
 import { isNodeOfflineError } from '@/lib/nodes/utils/errors'
 import { GetHeightResponseDto } from '@/lib/schema/client'
+import { NODE_LABELS } from '@/lib/nodes/constants'
 import { AdmNode, Payload, RequestConfig } from './AdmNode'
 import { Client } from '../abstract.client'
 
@@ -12,7 +13,7 @@ import { Client } from '../abstract.client'
  */
 export class AdmClient extends Client<AdmNode> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
-    super('adm')
+    super('adm', 'node', NODE_LABELS.AdmNode)
     this.nodes = endpoints.map((endpoint) => new AdmNode(endpoint, minNodeVersion))
     this.minNodeVersion = minNodeVersion
 

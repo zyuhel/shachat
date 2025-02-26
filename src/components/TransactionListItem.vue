@@ -5,7 +5,7 @@
         <v-icon
           :class="`${className}__prepend-icon`"
           :icon="
-            isStringEqualCI(senderId, userId) ? 'mdi-airplane-takeoff' : 'mdi-airplane-landing'
+            isStringEqualCI(senderId, userId) ? mdiAirplaneTakeoff : mdiAirplaneLanding
           "
           size="small"
         />
@@ -50,7 +50,7 @@
           <v-btn icon ripple variant="plain" @click.stop="onClickIcon">
             <v-icon
               :class="`${className}__icon`"
-              :icon="isPartnerInChatList ? 'mdi-message-text' : 'mdi-message-outline'"
+              :icon="isPartnerInChatList ? mdiMessageText : mdiMessageOutline"
               size="small"
             />
           </v-btn>
@@ -70,6 +70,8 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import currencyAmount from '@/filters/currencyAmount'
 import { timestampInSec } from '@/filters/helpers'
 import currency from '@/filters/currencyAmountWithSymbol'
+import { mdiAirplaneLanding, mdiAirplaneTakeoff, mdiMessageOutline, mdiMessageText } from '@mdi/js'
+
 
 export default {
   mixins: [partnerName],
@@ -110,6 +112,14 @@ export default {
     }
   },
   emits: ['click:transaction', 'click:icon'],
+  setup() {
+    return {
+      mdiAirplaneLanding,
+      mdiAirplaneTakeoff,
+      mdiMessageOutline,
+      mdiMessageText
+    }
+  },
   data: () => ({
     virtualTimestamp: Date.now()
   }),

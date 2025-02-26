@@ -8,6 +8,7 @@
       <v-divider class="a-divider" />
 
       <v-card-text class="pa-4">
+<!--     Todo: check src/components/LoginForm.vue component and consider the possibility to move common code to new component  -->
         <v-text-field
           v-model="password"
           color="primary"
@@ -28,7 +29,7 @@
               :size="28"
               variant="plain"
             >
-              <v-icon :icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'" :size="24" />
+              <v-icon :icon="showPassword ? mdiEye : mdiEyeOff" :size="24" />
             </v-btn>
           </template>
         </v-text-field>
@@ -70,6 +71,8 @@
 <script>
 import { UserPasswordArticleLink } from '@/lib/constants'
 import { saveState } from '@/lib/idb/state'
+import { mdiEye, mdiEyeOff } from '@mdi/js'
+
 
 export default {
   props: {
@@ -79,6 +82,13 @@ export default {
     }
   },
   emits: ['password', 'update:modelValue'],
+  setup() {
+
+    return {
+      mdiEye,
+      mdiEyeOff
+    }
+  },
   data: () => ({
     password: '',
     showSpinner: false,

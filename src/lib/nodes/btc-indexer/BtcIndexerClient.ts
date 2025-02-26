@@ -1,4 +1,5 @@
 import type { AxiosRequestConfig } from 'axios'
+import { NODE_LABELS } from '@/lib/nodes/constants'
 import { Client } from '../abstract.client'
 import { BtcIndexer } from './BtcIndexer'
 import { MULTIPLIER, normalizeTransaction } from './utils'
@@ -17,7 +18,7 @@ import { GetUnspentsParams } from './types/api/get-unspents/get-unspents-params'
  */
 export class BtcIndexerClient extends Client<BtcIndexer> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
-    super('btc')
+    super('btc', 'service', NODE_LABELS.BtcIndexer)
     this.nodes = endpoints.map((endpoint) => new BtcIndexer(endpoint))
     this.minNodeVersion = minNodeVersion
 

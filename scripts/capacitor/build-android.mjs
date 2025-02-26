@@ -10,7 +10,7 @@ void run()
 async function run() {
   const $$ = $({ shell: true, stdout: 'inherit' })
 
-  await $$`npm run build` // build PWA
+  await $$`npm run android:prebuild` // build PWA
   await $$`cap sync` // copy web assets to ./android
 
   const buildArgs = [

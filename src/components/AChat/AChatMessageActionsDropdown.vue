@@ -16,7 +16,7 @@
         class="a-chat__message-actions-icon"
         @click="toggleMenu(true)"
       >
-        <v-icon icon="mdi-chevron-down" :size="24" />
+        <v-icon :icon="mdiChevronDown" :size="24" />
       </v-btn>
     </template>
 
@@ -33,6 +33,8 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { mdiChevronDown } from '@mdi/js'
+
 
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 
@@ -60,7 +62,7 @@ export default defineComponent({
       emit('open:change', state, props.transaction)
     }
 
-    return { t, classes, toggleMenu, emit }
+    return { t, classes, mdiChevronDown, toggleMenu }
   }
 })
 </script>

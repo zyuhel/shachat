@@ -178,7 +178,7 @@ class TabNotification extends Notification {
     this.interval = window.setInterval(() => {
       if (this.unreadAmount && this.showAmount) {
         if (this.unreadAmount < 100) {
-          document.title = this.i18n.tc('notifications.tabMessage.few', this.unreadAmount)
+          document.title = this.i18n.t('notifications.tabMessage.few', this.unreadAmount)
         } else {
           document.title = this.i18n.t('notifications.tabMessage.many')
         }

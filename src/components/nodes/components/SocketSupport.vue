@@ -1,6 +1,6 @@
 <template>
   <v-icon
-    :icon="node.socketSupport ? 'mdi-check' : 'mdi-close'"
+    :icon="node.socketSupport ? mdiCheck : mdiClose"
     :class="node.socketSupport ? classes.supported : classes.unsupported"
   />
 </template>
@@ -9,6 +9,9 @@
 import { defineComponent, PropType } from 'vue'
 
 import type { NodeStatusResult } from '@/lib/nodes/abstract.node'
+
+import { mdiCheck, mdiClose } from '@mdi/js'
+
 
 const className = 'socket-support'
 const classes = {
@@ -25,7 +28,9 @@ export default defineComponent({
   },
   setup() {
     return {
-      classes
+      classes,
+      mdiCheck,
+      mdiClose
     }
   }
 })

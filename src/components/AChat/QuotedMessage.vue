@@ -8,17 +8,25 @@
     <v-progress-circular v-if="loading" indeterminate size="16" />
 
     <div v-else-if="errorCode === ErrorCodes.INVALID_MESSAGE" :class="classes.invalidMessage">
-      {{ '{ ' + $t('chats.invalid_message') + ' }' }}
+      {{ '{ ' + t('chats.invalid_message') + ' }' }}
     </div>
 
     <div v-else-if="errorCode === ErrorCodes.MESSAGE_NOT_FOUND" :class="classes.messageNotFound">
-      {{ '{ ' + $t('chats.message_not_found') + ' }' }}
+      {{ '{ ' + t('chats.message_not_found') + ' }' }}
     </div>
 
     <div v-else-if="transaction" :class="classes.message">
       <span v-if="isCryptoTransfer">
         {{ cryptoTransferLabel }}
       </span>
+
+      <span v-else-if="isAttachment">
+        <span v-if="transaction.asset.files.length > 0">
+          [{{ transaction.asset.files.length }} {{ t('chats.files') }}]:
+        </span>
+        {{ transaction.message }}
+      </span>
+
       <span v-else>
         <span v-html="messageLabel"></span>
       </span>
@@ -26,16 +34,17 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { computed, defineComponent, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 
 import { getTransaction, decodeChat } from '@/lib/adamant-api'
-import { normalizeMessage } from '@/lib/chat/helpers'
+import { NormalizedChatMessageTransaction, normalizeMessage } from '@/lib/chat/helpers'
 import { Cryptos } from '@/lib/constants'
 import currencyFormatter from '@/filters/currencyAmountWithSymbol'
 import { formatMessage } from '@/lib/markdown'
+import { ChatMessageTransaction } from '@/lib/schema/client/api'
 
 const className = 'quoted-message'
 const classes = {
@@ -47,12 +56,16 @@ const classes = {
 }
 
 const ErrorCodes = {
-  MESSAGE_NOT_FOUND: 'MESSAGE_NOT_FOUND',
-  INVALID_MESSAGE: 'INVALID_MESSAGE'
-}
+  INVALID_MESSAGE: 'INVALID_MESSAGE',
+  MESSAGE_NOT_FOUND: 'MESSAGE_NOT_FOUND'
+} as const
+
+type TErrorCode = (typeof ErrorCodes)[keyof typeof ErrorCodes]
 
 class ValidationError extends Error {
-  constructor(message, errorCode) {
+  public errorCode: TErrorCode
+
+  constructor(message: string, errorCode: TErrorCode) {
     super(message)
 
     this.name = 'ValidationError'
@@ -60,8 +73,8 @@ class ValidationError extends Error {
   }
 }
 
-async function fetchTransaction(transactionId, address) {
-  const rawTx = await getTransaction(transactionId, 1)
+async function fetchTransaction(transactionId: string, address: string) {
+  const rawTx = (await getTransaction(transactionId, 1)) as ChatMessageTransaction | null
 
   if (!rawTx) {
     throw new ValidationError(
@@ -73,7 +86,7 @@ async function fetchTransaction(transactionId, address) {
   const publicKey = rawTx.senderId === address ? rawTx.recipientPublicKey : rawTx.senderPublicKey
   const decodedTransaction = rawTx.type === 0 ? rawTx : decodeChat(rawTx, publicKey)
 
-  if (!decodedTransaction.message) {
+  if (!('message' in decodedTransaction)) {
     throw new ValidationError(
       `QuotedMessage: Cannot decode the message: txId: ${transactionId}`,
       ErrorCodes.INVALID_MESSAGE
@@ -98,18 +111,18 @@ export default defineComponent({
 
     const loading = ref(false)
     const store = useStore()
-    const errorCode = ref(false)
+    const errorCode = ref<TErrorCode | null>(null)
 
-    const stateTransaction = ref(null)
+    const stateTransaction = ref<NormalizedChatMessageTransaction | null>(null)
     const cachedTransaction = computed(() => store.getters['chat/messageById'](props.messageId))
     const transaction = computed(() => stateTransaction.value || cachedTransaction.value)
 
     const address = computed(() => store.state.address)
     const isCryptoTransfer = computed(() => {
       const validCryptos = Object.keys(Cryptos)
-
       return transaction.value ? validCryptos.includes(transaction.value.type) : false
     })
+    const isAttachment = computed(() => transaction.value?.type === 'attachment')
 
     const cryptoTransferLabel = computed(() => {
       const direction =
@@ -139,8 +152,8 @@ export default defineComponent({
 
         try {
           stateTransaction.value = await fetchTransaction(props.messageId, address.value)
-        } catch (err) {
-          if (err.errorCode) {
+        } catch (err: ValidationError | Error | unknown) {
+          if (err instanceof ValidationError) {
             errorCode.value = err.errorCode
           }
 
@@ -153,9 +166,11 @@ export default defineComponent({
 
     return {
       classes,
+      t,
       loading,
       transaction,
       isCryptoTransfer,
+      isAttachment,
       address,
       currencyFormatter,
       errorCode,

@@ -9,12 +9,12 @@
       <NodeVersion v-if="node.version && active" :node="node" />
     </NodeColumn>
 
-    <NodeColumn :colspan="!showSocketColumn ? 2 : 1">
+    <NodeColumn :class="classes.columnStatus">
       <NodeStatus :node="node" />
     </NodeColumn>
 
-    <NodeColumn v-if="showSocketColumn">
-      <SocketSupport :node="node" />
+    <NodeColumn>
+      <SocketSupport v-if="showSocketColumn" :node="node" />
     </NodeColumn>
   </tr>
 </template>
@@ -34,6 +34,7 @@ const className = 'amd-nodes-table-item'
 const classes = {
   root: className,
   column: `${className}__column`,
+  columnStatus: `${className}__column--status`,
   columnCheckbox: `${className}__column--checkbox`,
   checkbox: `${className}__checkbox`
 }
@@ -118,5 +119,9 @@ export default {
 <style lang="scss">
 .amd-nodes-table-item {
   line-height: 14px;
+  
+  &__column--status {
+    max-width: 84px;
+  }
 }
 </style>

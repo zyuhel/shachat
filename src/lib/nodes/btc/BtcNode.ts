@@ -53,7 +53,6 @@ export class BtcNode extends Node<AxiosInstance> {
     return this.client
       .request<RpcResponse<Result>>({
         ...requestConfig,
-        url: '/bitcoind',
         method: 'POST',
         data: params
       })

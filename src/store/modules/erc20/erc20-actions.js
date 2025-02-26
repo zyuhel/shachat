@@ -59,7 +59,7 @@ const createSpecificActions = (api) => ({
         commit('setBalanceStatus', FetchStatus.Success)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
-        console.log(err)
+        console.warn(err)
       }
     }
   },
@@ -74,33 +74,37 @@ const createSpecificActions = (api) => ({
       return
     }
 
-    const contract = new EthContract(Erc20, context.state.contractAddress)
-    contract.setProvider(api.getClient().provider)
+    try {
+      const contract = new EthContract(Erc20, context.state.contractAddress)
+      contract.setProvider(api.getClient().provider)
 
-    contract.methods
-      .balanceOf(context.state.address)
-      .call()
-      .then(
-        (balance) => {
-          context.commit(
-            'balance',
-            Number(ethUtils.toFraction(balance.toString(10), context.state.decimals))
-          )
-          context.commit('setBalanceStatus', FetchStatus.Success)
-        },
-        () => {
-          context.commit('setBalanceStatus', FetchStatus.Error)
-        }
-      )
-      .then(() => {
-        const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)
-        setTimeout(() => {
-          if (context.state.address) {
-            lastStatusUpdate = Date.now()
-            context.dispatch('updateStatus')
+      contract.methods
+        .balanceOf(context.state.address)
+        .call()
+        .then(
+          (balance) => {
+            context.commit(
+              'balance',
+              Number(ethUtils.toFraction(balance.toString(10), context.state.decimals))
+            )
+            context.commit('setBalanceStatus', FetchStatus.Success)
+          },
+          () => {
+            context.commit('setBalanceStatus', FetchStatus.Error)
           }
-        }, delay)
-      })
+        )
+        .then(() => {
+          const delay = Math.max(0, STATUS_INTERVAL - Date.now() + lastStatusUpdate)
+          setTimeout(() => {
+            if (context.state.address) {
+              lastStatusUpdate = Date.now()
+              context.dispatch('updateStatus')
+            }
+          }, delay)
+        })
+    } catch (err) {
+      console.warn(err)
+    }
   }
 })
 

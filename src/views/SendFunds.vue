@@ -28,6 +28,7 @@ import { isNumeric } from '@/lib/numericHelpers'
 import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import SendFundsForm from '@/components/SendFundsForm.vue'
 import { AllCryptos } from '@/lib/constants/cryptos'
+import { vibrate } from '@/lib/vibrate'
 
 export default {
   components: {
@@ -78,9 +79,10 @@ export default {
       }
     },
     onError(message) {
+      vibrate.doubleShort();
       this.$store.dispatch('snackbar/show', {
         message,
-        timeout: -1,
+        timeout: 3000,
         variant: 'outlined'
       })
     }

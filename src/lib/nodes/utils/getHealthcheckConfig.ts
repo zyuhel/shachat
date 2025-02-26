@@ -1,27 +1,40 @@
 import config from '@/config'
-import { HealthcheckInterval, NodeKind, NodeType } from '@/lib/nodes/types'
-import type { NodeHealthcheck, ServiceHealthcheck } from '@/types/wallets'
+import { TNodeLabel } from '@/lib/nodes/constants'
+import { HealthcheckInterval } from '@/lib/nodes/types'
+import type { NodeHealthcheck } from '@/types/wallets'
 
-export function getNodeHealthcheckConfig(nodeType: NodeType): NodeHealthcheck {
-  return config[nodeType].nodes.healthCheck
-}
-
-export function getServiceHealthcheckConfig(nodeType: NodeType): ServiceHealthcheck {
-  if (!config[nodeType].services) {
-    return config[nodeType].nodes.healthCheck // Workaround: there no configuration for ETH services
+export function getNodeHealthcheckConfig(nodeLabel: TNodeLabel): NodeHealthcheck {
+  switch (nodeLabel) {
+    case 'adm-node':
+      return config.adm.nodes.healthCheck
+    case 'eth-node':
+      return config.eth.nodes.healthCheck
+    case 'eth-indexer':
+      return config.eth.services.ethIndexer.healthCheck
+    case 'btc-node':
+      return config.btc.nodes.healthCheck
+    case 'btc-indexer':
+      return config.btc.services.btcIndexer.healthCheck
+    case 'doge-node':
+    case 'doge-indexer':
+      return config.doge.nodes.healthCheck
+    case 'dash-node':
+      return config.dash.nodes.healthCheck
+    case 'ipfs-node':
+      return config.adm.services.ipfsNode.healthCheck
+    case 'kly-node':
+      return config.kly.nodes.healthCheck
+    case 'kly-indexer':
+      return config.kly.services.klyService.healthCheck
+    case 'rates-info':
+      return config.adm.services.infoService.healthCheck
+    default:
+      throw new Error(`No healthcheck configuration found for ${nodeLabel}`)
   }
-  return config[nodeType].services.healthCheck
 }
 
-export function getHealthCheckInterval(
-  nodeType: NodeType,
-  nodeKind: NodeKind,
-  interval: HealthcheckInterval
-) {
-  const config =
-    nodeKind === 'service'
-      ? getServiceHealthcheckConfig(nodeType)
-      : getNodeHealthcheckConfig(nodeType)
+export function getHealthCheckInterval(nodeLabel: TNodeLabel, interval: HealthcheckInterval) {
+  const config = getNodeHealthcheckConfig(nodeLabel)
 
   switch (interval) {
     case 'normal':

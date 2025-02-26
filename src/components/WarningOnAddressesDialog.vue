@@ -15,7 +15,7 @@
 
       <v-col cols="12" class="text-center">
         <v-btn :class="[`${className}__btn-hide`, 'a-btn-primary']" @click="hide()">
-          <v-icon :class="`${className}__btn-icon`" icon="mdi-alert" />
+          <v-icon :class="`${className}__btn-icon`" :icon="mdiAlert" />
           <div :class="`${className}__btn-text`">
             {{ $t('warning_on_addresses.hide_button') }}
           </div>
@@ -34,6 +34,7 @@
 <script>
 import { vueBus } from '@/lib/vueBus'
 import DOMPurify from 'dompurify'
+import { mdiAlert } from '@mdi/js'
 
 export default {
   props: {
@@ -43,6 +44,11 @@ export default {
     }
   },
   emits: ['update:modelValue'],
+  setup() {
+    return {
+      mdiAlert
+    }
+  },
   data: () => ({
     header: '',
     content: ''

@@ -7,14 +7,15 @@ import {
   createMessage,
   createTransaction,
   createReaction,
-  normalizeMessage
+  normalizeMessage,
+  createAttachment
 } from '@/lib/chat/helpers'
 import { i18n } from '@/i18n'
 import { isNumeric } from '@/lib/numericHelpers'
 import { Cryptos, TransactionStatus as TS, MessageType } from '@/lib/constants'
 import { isStringEqualCI } from '@/lib/textHelpers'
-import { replyMessageAsset } from '@/lib/adamant-api/asset'
-
+import { replyMessageAsset, attachmentAsset } from '@/lib/adamant-api/asset'
+import { uploadFiles } from '../../../lib/files'
 import { generateAdamantChats } from './utils/generateAdamantChats'
 import { isAllNodesDisabledError, isAllNodesOfflineError } from '@/lib/nodes/utils/errors'
 
@@ -459,7 +460,7 @@ const mutations = {
    * @param {string} realId Real id (from server)
    * @param {string} status Message status
    */
-  updateMessage(state, { partnerId, id, realId, status }) {
+  updateMessage(state, { partnerId, id, realId, status, asset }) {
     const chat = state.chats[partnerId]
 
     if (chat) {
@@ -471,6 +472,9 @@ const mutations = {
         }
         if (status) {
           message.status = status
+        }
+        if (asset) {
+          message.asset = asset
         }
       }
     }
@@ -609,10 +613,15 @@ const actions = {
     const normalizedMessages = messages.map(normalizeMessage)
     dispatch('botCommands/reInitCommands', normalizedMessages, { root: true })
     normalizedMessages.forEach((message) => {
-      commit('pushMessage', {
-        message: message,
-        userId: rootState.address
-      })
+
+      const { recipientId, senderId } = message
+
+      if (recipientId === rootState.address || senderId === rootState.address) {
+        commit('pushMessage', {
+          message: message,
+          userId: rootState.address
+        })
+      }
     })
   },
 
@@ -727,6 +736,96 @@ const actions = {
     return queueMessage(messageAsset, recipientId, type)
       .then((res) => {
         // @todo this check must be performed on the server
+        if (!res.success) {
+          throw new Error(i18n.global.t('chats.message_rejected'))
+        }
+
+        // update `message.status` to 'REGISTERED'
+        // and `message.id` with `realId` from server
+        commit('updateMessage', {
+          id: messageObject.id,
+          realId: res.transactionId,
+          status: TS.REGISTERED, // not confirmed yet, wait to be stored in the blockchain (optional line)
+          partnerId: recipientId
+        })
+
+        return res
+      })
+      .catch((err) => {
+        // update `message.status` to 'REJECTED'
+        commit('updateMessage', {
+          id: messageObject.id,
+          status: TS.REJECTED,
+          partnerId: recipientId
+        })
+
+        throw err // call the error again so that it can be processed inside view
+      })
+  },
+
+  /**
+   * Send files to the chat.
+   * After confirmation, `id` and `status` will be updated.
+   *
+   * @param {string} message
+   * @param {string} recipientId
+   * @param {FileData[]} files
+   * @param {string} replyToId Optional
+   * @returns {Promise}
+   */
+  async sendAttachment({ commit, rootState }, { files, message, recipientId, replyToId }) {
+    let messageObject = createAttachment({
+      message,
+      recipientId,
+      senderId: rootState.address,
+      files,
+      replyToId
+    })
+    console.debug('Message', messageObject)
+
+    commit('pushMessage', {
+      message: messageObject,
+      userId: rootState.address
+    })
+
+    const cids = files.map((file) => [file.cid, file.preview?.cid]).filter((cid) => !!cid)
+    const newAsset = replyToId
+      ? { replyto_id: replyToId, reply_message: attachmentAsset(files, message) }
+      : attachmentAsset(files, message)
+    commit('updateMessage', {
+      id: messageObject.id,
+      partnerId: recipientId,
+      asset: newAsset
+    })
+    console.debug('Updated CIDs and Nonces', newAsset)
+
+    try {
+      const uploadData = await uploadFiles(files, (progress) => {
+        for (const [cid] of cids) {
+          commit('attachment/setUploadProgress', { cid, progress }, { root: true })
+        }
+      })
+      console.debug('Files uploaded', uploadData)
+    } catch (err) {
+      commit('updateMessage', {
+        id: messageObject.id,
+        status: TS.REJECTED,
+        partnerId: recipientId
+      })
+
+      for (const [cid] of cids) {
+        commit('attachment/resetUploadProgress', { cid }, { root: true })
+      }
+
+      throw err
+    }
+
+    for (const [cid] of cids) {
+      commit('attachment/resetUploadProgress', { cid }, { root: true })
+    }
+
+    return queueMessage(newAsset, recipientId, MessageType.RICH_CONTENT_MESSAGE)
+      .then((res) => {
         if (!res.success) {
           throw new Error(i18n.global.t('chats.message_rejected'))
         }

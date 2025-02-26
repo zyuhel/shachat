@@ -6,7 +6,7 @@ import config from '../index'
  * @param {string} crypto like 'adm' or 'eth'
  * @param {string} address Crypto address
  */
-export function getExplorerAddressUrl(crypto: string, address: number): string {
+export function getExplorerAddressUrl(crypto: string, address: string): string {
   const explorerAddress = config[crypto.toLowerCase()].explorerAddress
 
   if (!explorerAddress) {

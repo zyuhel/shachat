@@ -4,7 +4,7 @@
       <container>
         <v-toolbar ref="toolbar" :flat="flat" :height="height">
           <v-btn v-if="showBack" icon size="small" @click="goBack">
-            <v-icon icon="mdi-arrow-left" size="x-large" />
+            <v-icon :icon="mdiArrowLeft" size="x-large" />
           </v-btn>
 
           <v-toolbar-title v-if="title" class="a-text-regular-enlarged">
@@ -20,6 +20,8 @@
 </template>
 
 <script>
+import { mdiArrowLeft } from '@mdi/js'
+
 export default {
   props: {
     title: {
@@ -49,6 +51,11 @@ export default {
     showBack: {
       type: Boolean,
       default: true
+    }
+  },
+  setup() {
+    return {
+      mdiArrowLeft
     }
   },
   computed: {

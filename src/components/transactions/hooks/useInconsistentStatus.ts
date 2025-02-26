@@ -1,7 +1,7 @@
 import { computed, Ref } from 'vue'
 import { useStore } from 'vuex'
 import { useFindAdmTransaction } from './useFindAdmTransaction'
-import { useKVSCryptoAddress } from '@/hooks/queries/useKVSCryptoAddress.ts'
+import { useKVSCryptoAddress } from '@/hooks/queries/useKVSCryptoAddress'
 import { CryptoSymbol, isErc20 } from '@/lib/constants'
 import { DecodedChatMessageTransaction } from '@/lib/adamant-api'
 import { getInconsistentStatus, InconsistentStatus } from '../utils/getInconsistentStatus'

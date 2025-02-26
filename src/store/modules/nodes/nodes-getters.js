@@ -14,6 +14,9 @@ export default {
   dash(state) {
     return Object.values(state.dash)
   },
+  ipfs(state) {
+    return Object.values(state.ipfs)
+  },
   kly(state) {
     return Object.values(state.kly)
   },

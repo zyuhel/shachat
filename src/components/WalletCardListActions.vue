@@ -2,7 +2,7 @@
   <v-list :class="className">
     <v-list-item @click="sendFunds">
       <template #prepend>
-        <v-icon :class="`${className}__icon`" icon="mdi-bank-transfer-out" />
+        <v-icon :class="`${className}__icon`" :icon="mdiBankTransferOut" />
       </template>
 
       <v-list-item-title :class="`${className}__title`">
@@ -23,7 +23,7 @@
 
       <v-list-item @click="buyTokens">
         <template #prepend>
-          <v-icon :class="`${className}__icon`" icon="mdi-finance" />
+          <v-icon :class="`${className}__icon`" :icon="mdiFinance" />
         </template>
 
         <v-list-item-title :class="`${className}__title`">
@@ -33,7 +33,7 @@
 
       <v-list-item v-if="!hasAdmTokens" @click="getFreeTokens">
         <template #prepend>
-          <v-icon :class="`${className}__icon`" icon="mdi-gift" />
+          <v-icon :class="`${className}__icon`" :icon="mdiGift" />
         </template>
 
         <v-list-item-title :class="`${className}__title`">
@@ -53,6 +53,9 @@ import Icon from '@/components/icons/BaseIcon.vue'
 import StakeIcon from '@/components/icons/common/Stake.vue'
 import { websiteUriToOnion } from '@/lib/uri'
 
+import { mdiBankTransferOut, mdiFinance, mdiGift } from '@mdi/js'
+
+
 export default {
   components: {
     BuyTokensDialog,
@@ -68,6 +71,13 @@ export default {
     isADM: {
       required: true,
       type: Boolean
+    }
+  },
+  setup() {
+    return {
+      mdiBankTransferOut,
+      mdiFinance,
+      mdiGift
     }
   },
   data: () => ({

@@ -125,13 +125,13 @@ export default {
       const count = addresses.length
       return addresses.includes(this.$store.state[this.crypto.toLowerCase()].address)
         ? `${
-            this.$tc('transaction.me') +
+            this.$t('transaction.me') +
             ' (' +
             this.$store.state[this.cryptoModule].address +
             ') ' +
-            this.$tc('transaction.addresses', count - 1)
+            this.$t('transaction.addresses', count - 1)
           }`
-        : addresses[0] + ' ' + this.$tc('transaction.addresses', count - 1)
+        : addresses[0] + ' ' + this.$t('transaction.addresses', count - 1)
     },
     goToTransaction(transactionId) {
       this.$router.push({

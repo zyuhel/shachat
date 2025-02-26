@@ -1,6 +1,7 @@
-import { KLY_TOKEN_ID } from '@/lib/klayr'
-import { TransactionNotFound } from '@/lib/nodes/utils/errors'
 import { AxiosRequestConfig } from 'axios'
+import { KLY_TOKEN_ID } from '@/lib/klayr'
+import { NODE_LABELS } from '@/lib/nodes/constants'
+import { TransactionNotFound } from '@/lib/nodes/utils/errors'
 import { normalizeTransaction } from './utils'
 import { TransactionParams } from './types/api/transactions/transaction-params'
 import { Endpoints } from './types/api/endpoints'
@@ -9,7 +10,7 @@ import { Client } from '../abstract.client'
 
 export class KlyIndexerClient extends Client<KlyIndexer> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
-    super('kly')
+    super('kly', 'service', NODE_LABELS.KlyIndexer)
     this.nodes = endpoints.map((endpoint) => new KlyIndexer(endpoint))
     this.minNodeVersion = minNodeVersion
 

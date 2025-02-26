@@ -116,10 +116,6 @@ export default defineComponent({
     dataId: {
       type: String
     },
-    crypto: {
-      type: String as PropType<CryptoSymbol | 'UNKNOWN_CRYPTO'>,
-      default: 'ADM'
-    },
     /**
      * Highlight the message by applying a background flash effect
      */
@@ -143,21 +139,22 @@ export default defineComponent({
     const store = useStore()
 
     const userId = computed(() => store.state.address)
+    const crypto = computed(() => props.transaction.type as CryptoSymbol | 'UNKNOWN_CRYPTO')
 
     const time = useTransactionTime(props.transaction)
     const isCryptoSupported = computed(() => props.transaction.type in Cryptos)
     const checkStatusUpdatable = (status: TransactionStatusType) => {
-      return tsUpdatable(status, props.crypto as CryptoSymbol)
+      return tsUpdatable(status, crypto.value as CryptoSymbol)
     }
 
     const historyRate = computed(() => {
-      const amount = currencyAmount(props.transaction.amount, props.crypto)
+      const amount = currencyAmount(props.transaction.amount, crypto.value)
       return (
         '~' +
         store.getters['rate/historyRate'](
-          timestampInSec(props.crypto, props.transaction.timestamp),
+          timestampInSec(crypto.value, props.transaction.timestamp),
           amount,
-          props.crypto
+          crypto.value
         )
       )
     })
@@ -170,7 +167,7 @@ export default defineComponent({
 
     const getHistoryRates = () => {
       store.dispatch('rate/getHistoryRates', {
-        timestamp: timestampInSec(props.crypto, props.transaction.timestamp)
+        timestamp: timestampInSec(crypto.value, props.transaction.timestamp)
       })
     }
 
@@ -195,6 +192,7 @@ export default defineComponent({
 
     return {
       t,
+      crypto,
       userId,
 
       time,

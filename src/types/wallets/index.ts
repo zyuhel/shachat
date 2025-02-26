@@ -26,6 +26,26 @@ export interface NodeHealthcheck {
   threshold: number
 }
 
+export interface ProjectLink {
+  name: string
+  url: string
+}
+
+export interface Service {
+  /** Service node description */
+  description: ServiceDescription
+  list: NodeInfo[]
+  healthCheck: ServiceHealthcheck
+  displayName: string
+}
+
+/** Service node description */
+export interface ServiceDescription {
+  software: string
+  github?: string
+  docs?: string
+}
+
 export interface ServiceHealthcheck {
   /** Regular node status update interval in ms */
   normalUpdateInterval: number
@@ -35,14 +55,12 @@ export interface ServiceHealthcheck {
   onScreenUpdateInterval: number
 }
 
-export interface ProjectLink {
-  name: string
-  url: string
-}
-
-export interface Service {
-  url: string
-  alt_ip?: string
+/** Timeouts when sending messages in chat. See [README.md](https://github.com/Adamant-im/adamant-wallets/blob/master/README.md#message-sending) for details. */
+export interface MessageTimeout {
+  /** Timeout for regular messages (in milliseconds) */
+  message: string
+  /** Timeout for file transfers (in milliseconds) */
+  attachment: number
 }
 
 export interface TokenGeneral {
@@ -110,28 +128,27 @@ export interface TokenGeneral {
     /** Attempts to fetch Tx when its current status is "Pending" for old transactions */
     oldPendingAttempts?: number
   }
+  /** Timeouts when sending messages in chat. See [README.md](https://github.com/Adamant-im/adamant-wallets/blob/master/README.md#message-sending) for details. */
+  timeout?: MessageTimeout
   /** Time in ms when difference between in-chat transfer and Tx timestamp considered as acceptable */
   txConsistencyMaxTime?: number
   nodes?: {
     /** Node links for API */
     list: NodeInfo[]
     healthCheck: NodeHealthcheck
+    displayName: string
     /**
      * Minimal node API version
      * @example "0.8.0"
      */
     minVersion?: string
-  }
-  services?: {
-    /** Service node links for API */
-    list: Record<string, Service>
-    healthCheck: ServiceHealthcheck
     /**
-     * Minimal service node API version
-     * @example "1.0.0"
+     * A time correction for the message transactions on ADM
+     * @example 500
      */
-    minVersion?: string
+    nodeTimeCorrection?: number
   }
+  services?: Record<string, Service>
   /** Additional project links */
   links?: ProjectLink[]
   tor?: {
@@ -147,22 +164,19 @@ export interface TokenGeneral {
       /** Node links for API */
       list: NodeInfo[]
       healthCheck: NodeHealthcheck
+      displayName: string
       /**
        * Minimal node API version
        * @example "0.8.0"
        */
       minVersion?: string
-    }
-    services?: {
-      /** Service node links for API */
-      list: Record<string, Service>
-      healthCheck?: ServiceHealthcheck
       /**
-       * Minimal service node API version
-       * @example "1.0.0"
+       * A time correction for the message transactions on ADM
+       * @example 500
        */
-      minVersion?: string
+      nodeTimeCorrection?: number
     }
+    services?: Record<string, Service>
     /** Additional project links (Tor) */
     links?: ProjectLink[]
   }

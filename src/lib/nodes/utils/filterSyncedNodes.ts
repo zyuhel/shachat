@@ -1,4 +1,4 @@
-import { NodeType } from '@/lib/nodes/types'
+import { TNodeLabel } from '@/lib/nodes/constants'
 import { getNodeHealthcheckConfig } from './getHealthcheckConfig'
 
 /**
@@ -7,10 +7,10 @@ import { getNodeHealthcheckConfig } from './getHealthcheckConfig'
  * If two nodes' heights differ by no more than this value,
  * they are considered to be in sync with each other.
  */
-function getHeightEpsilon(nodeType: NodeType): number {
-  const config = getNodeHealthcheckConfig(nodeType)
+function getHeightEpsilon(nodeLabel: TNodeLabel): number {
+  const config = getNodeHealthcheckConfig(nodeLabel)
 
-  return config.threshold
+  return config.threshold || 10000
 }
 
 interface Node {
@@ -27,7 +27,10 @@ type GroupNodes<N extends Node> = {
  * height (considering HEIGHT_EPSILON). These nodes are considered to be in sync with the network,
  * all the others are not.
  */
-export function filterSyncedNodes<N extends Node>(nodes: N[], type: NodeType): GroupNodes<N> {
+export function filterSyncedNodes<N extends Node>(
+  nodes: N[],
+  nodeLabel: TNodeLabel
+): GroupNodes<N> {
   if (nodes.length === 0) {
     return {
       height: 0,
@@ -35,7 +38,7 @@ export function filterSyncedNodes<N extends Node>(nodes: N[], type: NodeType): G
     }
   }
 
-  const heightEpsilon = getHeightEpsilon(type)
+  const heightEpsilon = getHeightEpsilon(nodeLabel)
 
   // For each node we take its height and list of nodes that have the same height ± epsilon
   const groups = nodes.map((node) => {

@@ -1,4 +1,5 @@
 import type { HealthcheckInterval, NodeKind, NodeType } from '@/lib/nodes/types'
+import { TNodeLabel } from '@/lib/nodes/constants'
 import { AllNodesDisabledError, AllNodesOfflineError } from './utils/errors'
 import { filterSyncedNodes } from './utils/filterSyncedNodes'
 import { Node } from './abstract.node'
@@ -29,6 +30,10 @@ export abstract class Client<N extends Node> {
    * Node type
    */
   type: NodeType
+  /**
+   * Node label
+   */
+  label: TNodeLabel
 
   /**
    * Resolves when at least one node is ready to accept requests
@@ -37,9 +42,10 @@ export abstract class Client<N extends Node> {
   resolve = () => {}
   initialized = false
 
-  constructor(type: NodeType, kind: NodeKind = 'node') {
+  constructor(type: NodeType, kind: NodeKind, label: TNodeLabel) {
     this.type = type
     this.kind = kind
+    this.label = label
     this.useFastest = nodesStorage.getUseFastest(type)
 
     this.ready = new Promise((resolve) => {
@@ -198,7 +204,7 @@ export abstract class Client<N extends Node> {
   protected updateSyncStatuses() {
     const nodes = this.nodes.filter((x) => x.online && x.active)
 
-    const nodesInSync = filterSyncedNodes(nodes, this.type)
+    const nodesInSync = filterSyncedNodes(nodes, this.label)
 
     // Finally, all the nodes from the winner list are considered to be in sync, all the
     // others are not

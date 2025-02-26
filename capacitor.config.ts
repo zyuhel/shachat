@@ -3,7 +3,7 @@ import { CapacitorConfig } from '@capacitor/cli'
 const config: CapacitorConfig = {
   appId: 'im.adamant.adamantmessengerpwa',
   appName: 'ADAMANT Messenger',
-  webDir: 'dist',
+  webDir: 'dist-android',
   server: {
     androidScheme: 'https'
   },

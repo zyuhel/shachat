@@ -16,7 +16,7 @@
               </v-list-subheader>
             </v-col>
             <v-col cols="6" class="text-right">
-              <language-switcher append-icon="mdi-chevron-down" />
+              <language-switcher :append-icon="mdiChevronDown" />
             </v-col>
             <v-col cols="6">
               <v-list-subheader :class="`${className}__label`">
@@ -24,7 +24,7 @@
               </v-list-subheader>
             </v-col>
             <v-col cols="6" class="text-right">
-              <currency-switcher append-icon="mdi-chevron-down" />
+              <currency-switcher :append-icon="mdiChevronDown" />
             </v-col>
             <v-col cols="12">
               <v-checkbox
@@ -47,9 +47,9 @@
                 :label="$t('options.stay_logged_in')"
                 color="grey darken-1"
                 :modelValue="stayLoggedIn"
-                @update:modelValue="onCheckStayLoggedIn"
                 density="comfortable"
                 hide-details
+                @click.prevent="onCheckStayLoggedIn"
               />
 
               <div class="a-text-explanation-enlarged">
@@ -163,25 +163,25 @@
               <v-list class="actions-list">
                 <v-list-item
                   :title="$t('options.nodes_list')"
-                  append-icon="mdi-chevron-right"
+                  :append-icon="mdiChevronRight"
                   @click="$router.push('/options/nodes')"
                 />
 
                 <v-list-item
                   :title="$t('options.wallets_list')"
-                  append-icon="mdi-chevron-right"
+                  :append-icon="mdiChevronRight"
                   @click="$router.push('/options/wallets')"
                 />
 
                 <v-list-item
                   :title="$t('options.export_keys.title')"
-                  append-icon="mdi-chevron-right"
+                  :append-icon="mdiChevronRight"
                   @click="$router.push('/options/export-keys')"
                 />
 
                 <v-list-item
                   :title="$t('options.vote_for_delegates_button')"
-                  append-icon="mdi-chevron-right"
+                  :append-icon="mdiChevronRight"
                   @click="$router.push('/votes')"
                 />
 
@@ -189,7 +189,7 @@
 
                 <v-list-item
                   :title="$t('bottom.exit_button')"
-                  append-icon="mdi-logout-variant"
+                  :append-icon="mdiLogoutVariant"
                   @click="logout"
                 />
               </v-list>
@@ -213,6 +213,8 @@ import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import PasswordSetDialog from '@/components/PasswordSetDialog.vue'
 import { clearDb, db as isIDBSupported } from '@/lib/idb'
 import scrollPosition from '@/mixins/scrollPosition'
+import { mdiChevronRight, mdiChevronDown, mdiLogoutVariant } from '@mdi/js'
+
 
 export default {
   components: {
@@ -222,6 +224,13 @@ export default {
     PasswordSetDialog
   },
   mixins: [scrollPosition],
+  setup() {
+    return {
+      mdiChevronDown,
+      mdiChevronRight,
+      mdiLogoutVariant
+    }
+  },
   data: () => ({
     passwordDialog: false
   }),

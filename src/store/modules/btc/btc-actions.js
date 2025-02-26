@@ -18,14 +18,20 @@ const customActions = (getApi) => ({
       })
       .catch((err) => {
         context.commit('setBalanceStatus', FetchStatus.Error)
-        throw err
+        console.warn(err)
       })
 
     // The unspent transactions are needed to estimate the fee
-    btcIndexer.getUnspents(context.state.address).then((utxo) => context.commit('utxo', utxo))
+    btcIndexer
+      .getUnspents(context.state.address)
+      .then((utxo) => context.commit('utxo', utxo))
+      .catch((err) => console.warn(err))
 
     // The estimated fee rate is also needed
-    btcIndexer.getFeeRate().then((rate) => context.commit('feeRate', rate['2']))
+    btcIndexer
+      .getFeeRate()
+      .then((rate) => context.commit('feeRate', rate['2']))
+      .catch((err) => console.warn(err))
 
     // Last block height
     context.dispatch('updateHeight')
@@ -34,7 +40,11 @@ const customActions = (getApi) => ({
   updateHeight({ commit }) {
     const api = getApi()
     if (!api) return
-    btcIndexer.getHeight().then((height) => commit('height', height))
+
+    btcIndexer
+      .getHeight()
+      .then((height) => commit('height', height))
+      .catch((err) => console.warn(err))
   }
 })
 

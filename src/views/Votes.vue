@@ -8,7 +8,7 @@
           <v-card flat color="transparent">
             <v-text-field
               v-model="search"
-              append-inner-icon="mdi-magnify"
+              :append-inner-icon="mdiMagnify"
               :label="t('votes.search')"
               :class="`${className}__search`"
               single-line
@@ -90,6 +90,8 @@ import DelegatesTable from '@/components/DelegatesTable/DelegatesTable.vue'
 import { computed, onMounted, ref, reactive, defineComponent, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import { mdiMagnify } from '@mdi/js'
+
 
 const VOTE_REQUEST_LIMIT = 30
 
@@ -227,6 +229,7 @@ export default defineComponent({
       pages,
       showPagination,
       reviewButtonDisabled,
+      mdiMagnify,
       upVote,
       downVote,
       sendVotes,

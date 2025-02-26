@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import smartNumber from './smartNumber.ts'
+import smartNumber from './smartNumber'
 
 describe('smartNumber', () => {
   it('should convert amount to compact notation', () => {

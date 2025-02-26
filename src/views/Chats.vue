@@ -9,7 +9,7 @@
                 :class="`${className}__btn mt-2 ml-4`"
                 @click="markAllAsRead"
                 v-if="unreadMessagesCount > 0"
-                icon="mdi-check-all"
+                :icon="mdiCheckAll"
                 size="small"
                 variant="text"
               />
@@ -20,7 +20,7 @@
                 variant="plain"
               >
                 <template #prepend>
-                  <v-icon :class="`${className}__icon`" icon="mdi-message-outline" size="small" />
+                  <v-icon :class="`${className}__icon`" :icon="mdiMessageOutline" size="small" />
                 </template>
 
                 <div>
@@ -71,6 +71,8 @@ import ChatSpinner from '@/components/ChatSpinner.vue'
 import NodesOfflineDialog from '@/components/NodesOfflineDialog.vue'
 import scrollPosition from '@/mixins/scrollPosition'
 import { getAdamantChatMeta, isAdamantChat, isStaticChat } from '@/lib/chat/meta/utils'
+import { mdiMessageOutline, mdiCheckAll } from '@mdi/js'
+
 
 const scrollOffset = 64
 
@@ -85,6 +87,12 @@ export default {
   props: {
     partnerId: { default: undefined, type: String },
     showNewContact: { default: false, type: Boolean }
+  },
+  setup () {
+    return {
+      mdiCheckAll,
+      mdiMessageOutline
+    }
   },
   data: () => ({
     showChatStartDialog: false,

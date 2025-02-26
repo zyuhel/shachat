@@ -18,7 +18,7 @@
         :elevation="0"
         :size="32"
       >
-        <v-icon icon="mdi-chevron-down" :size="24" />
+        <v-icon :icon="mdiChevronDown" :size="24" />
       </v-btn>
     </div>
   </div>
@@ -32,6 +32,7 @@ import { useStore } from 'vuex'
 import { usePartnerId } from '@/components/AChat/hooks/usePartnerId'
 import { isEmptyReaction, NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import AChatReactionSelectItem from './AChatReactionSelectItem.vue'
+import { mdiChevronDown } from '@mdi/js'
 
 const className = 'a-chat-reaction-select'
 const classes = {
@@ -89,6 +90,7 @@ export default defineComponent({
       classes,
       emojis,
       lastReaction,
+      mdiChevronDown,
       onReact
     }
   }

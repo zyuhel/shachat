@@ -135,7 +135,8 @@
     "tabs": {
       "adm_nodes": "ADM Knooppunten",
       "coin_nodes": "Munt Knooppunten",
-      "service_nodes": "Service Knooppunten"
+      "service_nodes": "Service Knooppunten",
+      "ipfs_nodes": "IPFS-Knoten"
     }
   },
   "notifications": {

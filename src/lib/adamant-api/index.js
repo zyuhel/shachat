@@ -174,6 +174,17 @@ export function sendMessage(params) {
 }
 
 /**
+ * @param {Uint8Array} file
+ * @param {{ to: string }} params
+ */
+export async function encodeFile(file, params) {
+  const publicKey = await getPublicKey(params.to)
+  const { binary, nonce } = utils.encodeBinary(file, publicKey, myKeypair.privateKey)
+
+  return { binary, nonce }
+}
+
+/**
  * Sends special message with the specified payload
  * @param {string} to recipient address
  * @param {object} payload message payload
@@ -336,9 +347,18 @@ export function storeCryptoAddress(crypto, address) {
   const key = `${crypto.toLowerCase()}:address`
   pendingAddresses[crypto] = true
 
+  // capture the current ADM address to avoid unintended behavior if the global
+  // variable changes later (e.g. when logging into another account)
+  const localMyAddress = myAddress
+
   // Don't store crypto address twice, check it first in KVS
   return getStored(key, myAddress, 20)
     .then((stored) => {
+      if (myAddress !== localMyAddress) {
+        return Promise.reject(
+          'Reason: Logged into another account while the getStored() request was pending'
+        )
+      }
       // It may be empty array: no addresses stored yet for this crypto
       if (stored) {
         stored = parseCryptoAddressesKVStxs(stored, crypto)
@@ -353,7 +373,7 @@ export function storeCryptoAddress(crypto, address) {
         return success
       },
       (error) => {
-        console.warn(`Failed to store crypto address for ${key}`, error)
+        console.warn(`Failed to store crypto address for ${key}.`, error)
         delete pendingAddresses[crypto]
         return false
       }

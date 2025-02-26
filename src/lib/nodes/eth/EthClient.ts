@@ -1,5 +1,6 @@
 import { Web3Eth } from 'web3-eth'
 import { TransactionNotFound as Web3TransactionNotFound } from 'web3-errors'
+import { NODE_LABELS } from '@/lib/nodes/constants'
 import { TransactionNotFound } from '@/lib/nodes/utils/errors'
 import { CryptoSymbol } from '@/lib/constants'
 import { bytesToHex } from '@/lib/hex'
@@ -16,7 +17,7 @@ import { normalizeEthTransaction, normalizeErc20Transaction } from './utils'
  */
 export class EthClient extends Client<EthNode> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
-    super('eth')
+    super('eth', 'node', NODE_LABELS.EthNode)
     this.nodes = endpoints.map((endpoint) => new EthNode(endpoint))
     this.minNodeVersion = minNodeVersion
 

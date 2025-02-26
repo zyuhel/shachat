@@ -444,6 +444,52 @@ adamant.decodeValue = function (source, privateKey, nonce) {
 }
 
 /**
+ * Encodes a secret binary (available for the owner only)
+ * @param {Uint8Array} source value to encode
+ * @param {Uint8Array} recipientPublicKey sender's public key
+ * @param {Uint8Array|Buffer} privateKey private key
+ * @returns {{binary: string, nonce: string}} encoded binary and nonce (both as HEX-strings)
+ */
+adamant.encodeBinary = function (source, recipientPublicKey, privateKey) {
+  const nonce = Buffer.allocUnsafe(24)
+  sodium.randombytes(nonce)
+
+  const publicKey = hexToBytes(recipientPublicKey)
+
+  const DHPublicKey = ed2curve.convertPublicKey(publicKey)
+  const DHSecretKey = ed2curve.convertSecretKey(privateKey)
+
+  const encrypted = nacl.box(source, nonce, DHPublicKey, DHSecretKey)
+
+  return {
+    binary: encrypted,
+    nonce: bytesToHex(nonce)
+  }
+}
+
+/**
+ * Decodes a secret binary
+ * @param {string|Uint8Array} source source to decrypt
+ * @param {string|Uint8Array} senderPublicKey sender's public key
+ * @param {Uint8Array|Buffer} privateKey private key
+ * @param {string|Uint8Array} nonce nonce
+ * @returns {string} decoded value
+ */
+adamant.decodeBinary = function (source, senderPublicKey, privateKey, nonce) {
+  if (typeof nonce === 'string') {
+    nonce = hexToBytes(nonce)
+  }
+
+  const publicKey =
+    typeof senderPublicKey === 'string' ? hexToBytes(senderPublicKey) : senderPublicKey
+
+  const DHPublicKey = ed2curve.convertPublicKey(publicKey)
+  const DHSecretKey = ed2curve.convertSecretKey(privateKey)
+
+  return nacl.box.open(source, nonce, DHPublicKey, DHSecretKey)
+}
+
+/**
  * Converts ADM amount to its internal representation
  * @param {number|string} admAmount amount to convert
  * @returns {number}

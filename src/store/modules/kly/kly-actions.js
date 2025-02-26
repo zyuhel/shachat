@@ -25,7 +25,7 @@ const customActions = (getAccount) => ({
         commit('setBalanceStatus', FetchStatus.Success)
       } catch (err) {
         commit('setBalanceStatus', FetchStatus.Error)
-        console.log(err)
+        console.warn(err)
       }
     }
   },
@@ -45,7 +45,7 @@ const customActions = (getAccount) => ({
     } catch (err) {
       commit('setBalanceStatus', FetchStatus.Error)
 
-      throw err
+      console.warn(err)
     }
 
     // Last block height
@@ -53,9 +53,13 @@ const customActions = (getAccount) => ({
   },
 
   async updateHeight({ commit }) {
-    const height = await kly.getHeight()
+    try {
+      const height = await kly.getHeight()
 
-    commit('height', height)
+      commit('height', height)
+    } catch (err) {
+      console.warn(err)
+    }
   },
 
   /**

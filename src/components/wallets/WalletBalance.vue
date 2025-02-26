@@ -31,7 +31,7 @@ import { computed, defineComponent, toRefs } from 'vue'
 import currencyAmount from '@/filters/currencyAmount'
 import { Cryptos } from '@/lib/constants'
 import { useStore } from 'vuex'
-import smartNumber from '@/lib/smartNumber.ts'
+import smartNumber from '@/lib/smartNumber'
 import { useDisplay } from 'vuetify'
 
 const SIGNIFICANT_DIGITS = 7

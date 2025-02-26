@@ -3,6 +3,7 @@
     <v-divider v-if="showDivider" class="a-chat__divider" />
 
     <slot name="reply-preview" />
+    <slot name="preview-file" />
 
     <v-textarea
       ref="messageTextarea"
@@ -33,7 +34,7 @@
       </template>
       <template v-if="showSendButton" #append-inner>
         <slot name="append" />
-        <v-icon class="a-chat__send-icon" icon="mdi-send" size="28" />
+        <v-icon class="a-chat__send-icon" :icon="mdiSend" size="28" />
       </template>
     </v-textarea>
 
@@ -45,6 +46,7 @@
 import { nextTick } from 'vue'
 import ChatEmojis from '@/components/Chat/ChatEmojis.vue'
 import { isMobile } from '@/lib/display-mobile'
+import { mdiSend } from '@mdi/js'
 
 export default {
   components: { ChatEmojis },
@@ -82,6 +84,12 @@ export default {
     }
   },
   emits: ['message', 'esc', 'error'],
+  setup() {
+
+    return {
+      mdiSend
+    }
+  },
   data: () => ({
     message: '',
     emojiPickerOpen: false,

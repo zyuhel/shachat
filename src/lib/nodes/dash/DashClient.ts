@@ -1,4 +1,5 @@
 import { AxiosRequestConfig } from 'axios'
+import { NODE_LABELS } from '@/lib/nodes/constants'
 import { DashNode } from './DashNode'
 import { Client } from '../abstract.client'
 import { normalizeTransaction } from './utils'
@@ -9,7 +10,7 @@ import { Transaction } from './types/api/transaction'
 
 export class DashClient extends Client<DashNode> {
   constructor(endpoints: string[] = [], minNodeVersion = '0.0.0') {
-    super('dash')
+    super('dash', 'node', NODE_LABELS.DashNode)
     this.nodes = endpoints.map((endpoint) => new DashNode(endpoint))
     this.minNodeVersion = minNodeVersion
 

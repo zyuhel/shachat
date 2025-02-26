@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="showDialog" width="500" :class="className">
     <v-card>
-      <v-card-title class="a-text-header">
+      <v-card-title :class="`${className}__card-title a-text-header`">
         {{ t('chats.nodes_offline_dialog.title', { coin: nodeType.toUpperCase() }) }}
       </v-card-title>
 
@@ -20,7 +20,7 @@
           :class="[`${className}__btn-free-tokens`, 'a-btn-primary']"
           to="/options/nodes"
           variant="text"
-          prepend-icon="mdi-open-in-new"
+          :prepend-icon="mdiOpenInNew"
         >
           <div :class="`${className}__btn-text`">
             {{ t('chats.nodes_offline_dialog.open_nodes_button') }}
@@ -36,6 +36,7 @@ import { computed, PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useStore } from 'vuex'
 import { NodeType } from '@/lib/nodes/types'
+import { mdiOpenInNew } from '@mdi/js'
 
 const className = 'all-nodes-disabled-dialog'
 const classes = {
@@ -67,7 +68,8 @@ export default {
       t,
       classes,
       showDialog,
-      className
+      className,
+      mdiOpenInNew
     }
   }
 }
@@ -76,12 +78,11 @@ export default {
 @import 'vuetify/_settings.scss';
 @import '@/assets/styles/settings/_colors.scss';
 
-.nodes-offline-dialog {
+.all-nodes-disabled-dialog {
+  &__card-title {
+  }
   &__card-text {
     padding: 16px !important;
-  }
-  &__disclaimer {
-    margin-top: 10px;
   }
   &__btn {
     margin-top: 15px;
@@ -91,13 +92,13 @@ export default {
     margin-right: 8px;
   }
   &__btn-block {
-    padding: 16px 0 32px 0;
+    padding: 12px 0 24px 0;
     text-align: center;
   }
 }
 
 .v-theme--dark {
-  .nodes-offline-dialog {
+  .all-nodes-disabled-dialog {
     &__disclaimer {
       color: map-get($shades, 'white');
     }

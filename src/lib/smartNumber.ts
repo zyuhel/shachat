@@ -1,4 +1,4 @@
-import { toLocalCurrency } from '@/lib/toLocalCurrency.ts'
+import { toLocalCurrency } from '@/lib/toLocalCurrency'
 import BigNumber from 'bignumber.js'
 import bignumber from '@/lib/bignumber'
 

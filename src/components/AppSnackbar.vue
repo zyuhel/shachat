@@ -19,14 +19,21 @@
         fab
         @click="show = false"
       >
-        <v-icon :class="`${className}__icon`" icon="mdi-close" size="dense" />
+        <v-icon :class="`${className}__icon`" :icon="mdiClose" size="dense" />
       </v-btn>
     </div>
   </v-snackbar>
 </template>
 
 <script>
+import { mdiClose } from '@mdi/js'
+
 export default {
+  setup() {
+    return {
+      mdiClose
+    }
+  },
   computed: {
     className: () => 'app-snackbar',
     show: {
@@ -69,7 +76,7 @@ export default {
     margin: 0 auto;
     border-radius: 0;
     max-width: 300px;
-    border: 2px solid transparent;
+    border: 1px solid transparent;
   }
 
   :deep(.v-snackbar__content) {

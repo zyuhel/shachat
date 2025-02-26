@@ -37,7 +37,7 @@
         color="grey-lighten-1"
         class="handle"
         density="comfortable"
-        icon="mdi-menu"
+        :icon="mdiMenu"
         :disabled="!localWallet.isVisible || !!search"
         variant="text"
       ></v-btn>
@@ -51,6 +51,8 @@ import WalletBalance from '@/components/wallets/WalletBalance.vue'
 import { defineComponent, PropType, toRef } from 'vue'
 import { useStore } from 'vuex'
 import { CryptoSymbol } from '@/lib/constants'
+import { mdiMenu } from '@mdi/js'
+
 
 type Wallet = {
   erc20: boolean
@@ -94,7 +96,8 @@ export default defineComponent({
       classes,
       iconSize,
       localWallet,
-      store
+      store,
+      mdiMenu
     }
   }
 })

@@ -23,7 +23,7 @@
               :class="`${className}__btn-copy`"
               @click="copyKey(key.key)"
             >
-              <v-icon :class="`${className}__icon`" icon="mdi-content-copy" size="20" />
+              <v-icon :class="`${className}__icon`" :icon="mdiContentCopy" size="20" />
             </v-btn>
           </template>
         </v-text-field>
@@ -60,13 +60,13 @@
       </template>
       <template #append-inner>
         <v-btn @click="togglePassphraseVisibility" icon :ripple="false" :size="28" variant="plain">
-          <v-icon :icon="showPassphrase ? 'mdi-eye' : 'mdi-eye-off'" :size="24" />
+          <v-icon :icon="showPassphrase ? mdiEye : mdiEyeOff" :size="24" />
         </v-btn>
 
         <v-menu :offset-overflow="true" :offset-y="false" left eager>
           <template #activator="{ props }">
             <v-btn v-bind="props" icon variant="plain" :size="28" :ripple="false">
-              <v-icon icon="mdi-dots-vertical" :size="24" />
+              <v-icon :icon="mdiDotsVertical" :size="24" />
             </v-btn>
           </template>
           <v-list>
@@ -110,6 +110,8 @@ import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import { ref, defineComponent } from 'vue'
 import { useStore } from 'vuex'
 import { useI18n } from 'vue-i18n'
+import { mdiContentCopy, mdiDotsVertical, mdiEye,mdiEyeOff } from '@mdi/js'
+
 
 function getBtcKey(crypto, passphrase, asWif) {
   const keyPair = getBtcAccount(crypto, passphrase).keyPair
@@ -181,7 +183,7 @@ export default defineComponent({
         }
 
         const bitcoin = getBtcKey(Cryptos.BTC, passphrase.value, true)
-        const dash = getBtcKey(Cryptos.DASH, passphrase.value, false)
+        const dash = getBtcKey(Cryptos.DASH, passphrase.value, true)
         const doge = getBtcKey(Cryptos.DOGE, passphrase.value, true)
 
         const kly = getKlyKey(Cryptos.KLY, passphrase.value)
@@ -212,6 +214,10 @@ export default defineComponent({
       keys,
       className,
       t,
+      mdiContentCopy,
+      mdiDotsVertical,
+      mdiEye,
+      mdiEyeOff,
       onDetectQrcode,
       onDetectQrcodeError,
       onScanQrcode,

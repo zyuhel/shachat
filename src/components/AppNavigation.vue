@@ -8,7 +8,7 @@
   >
     <!-- Wallet -->
     <v-btn v-if="walletShouldBeVisible" to="/home">
-      <v-icon icon="mdi-wallet" />
+      <v-icon :icon="mdiWallet" />
       <span>{{ $t('bottom.wallet_button') }}</span>
     </v-btn>
 
@@ -21,16 +21,16 @@
         color="primary"
         :content="numOfNewMessages > 99 ? '99+' : numOfNewMessages"
       >
-        <v-icon icon="mdi-forum" />
+        <v-icon :icon="mdiForum" />
       </v-badge>
-      <v-icon v-else icon="mdi-forum" />
+      <v-icon v-else :icon="mdiForum" />
 
       <span>{{ $t('bottom.chats_button') }}</span>
     </v-btn>
 
     <!-- Settings -->
     <v-btn to="/options">
-      <v-icon icon="mdi-cog" />
+      <v-icon :icon="mdiCog" />
       <span>{{ $t('bottom.settings_button') }}</span>
     </v-btn>
   </v-bottom-navigation>
@@ -39,6 +39,8 @@
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import { watch, onMounted, defineComponent, ref, computed } from 'vue'
+import { mdiWallet, mdiForum, mdiCog } from '@mdi/js'
+
 
 export default defineComponent({
   setup() {
@@ -46,17 +48,14 @@ export default defineComponent({
       {
         title: 'wallet',
         link: '/home',
-        icon: 'mdi-wallet'
       },
       {
         title: 'chats',
         link: '/chats',
-        icon: 'mdi-forum'
       },
       {
         title: 'settings',
         link: '/options',
-        icon: 'mdi-cog'
       }
     ]
     const currentPageIndex = ref(0)
@@ -85,11 +84,13 @@ export default defineComponent({
     })
 
     return {
-      pages,
       currentPageIndex,
-      getCurrentPageIndex,
       numOfNewMessages,
-      walletShouldBeVisible
+      walletShouldBeVisible,
+      mdiWallet,
+      mdiForum,
+      mdiCog,
+      getCurrentPageIndex,
     }
   }
 })

@@ -28,7 +28,8 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
-
+# Android-builder out
+/dist-android
 # Electron-builder output
 /dist-electron
 # Electron app will be placed here after packaging

@@ -70,6 +70,16 @@ export function normalizeMessage(abstract) {
         transaction.type = notSupportedYetCrypto || 'UNKNOWN_CRYPTO'
         transaction.status = TS.UNKNOWN
       }
+    } else if (abstract.message.reply_message.files) {
+      transaction.asset = {
+        ...abstract.message.reply_message,
+        replyto_id: abstract.message.replyto_id
+      }
+      transaction.recipientPublicKey = abstract.recipientPublicKey
+      transaction.senderPublicKey = abstract.senderPublicKey
+      transaction.message = abstract.message.reply_message.comment || ''
+      transaction.hash = abstract.id
+      transaction.type = 'attachment'
     } else {
       // Unsupported transaction type. May require updating the PWA version.
       transaction.message = 'chats.unsupported_transaction_type'
@@ -106,6 +116,13 @@ export function normalizeMessage(abstract) {
     transaction.hash = abstract.id // adm transaction id (hash)
 
     abstract.amount > 0 ? (transaction.type = 'ADM') : (transaction.type = 'message')
+  } else if (abstract.message?.files) {
+    transaction.recipientPublicKey = abstract.recipientPublicKey
+    transaction.senderPublicKey = abstract.senderPublicKey
+    transaction.asset = abstract.message
+    transaction.hash = abstract.id
+    transaction.message = abstract.message.comment || ''
+    transaction.type = 'attachment'
   } else {
     // Unsupported transaction type. May require updating the PWA version.
     transaction.message = 'chats.unsupported_transaction_type'

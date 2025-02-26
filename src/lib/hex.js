@@ -15,7 +15,7 @@ export function hexToBytes(hexString = '') {
 
 /**
  * Converts a bytes array to the respective string representation
- * @param {Array<number>|Uint8Array} bytes bytes array
+ * @param {Array<number>|Uint8Array|Buffer} bytes bytes array
  * @returns {string}
  */
 export function bytesToHex(bytes = []) {

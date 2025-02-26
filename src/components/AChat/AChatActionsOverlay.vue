@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts">
-import { usePartnerId } from '@/components/AChat/hooks/usePartnerId.ts'
+import { usePartnerId } from '@/components/AChat/hooks/usePartnerId'
 import { NormalizedChatMessageTransaction } from '@/lib/chat/helpers'
 import { computed, defineComponent, onMounted, PropType, reactive, ref } from 'vue'
 

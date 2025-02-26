@@ -3,11 +3,11 @@
 
   <div>
     <div v-if="isBalanceLoading" :class="classes.balanceLoading">
-      <v-icon icon="mdi-dots-horizontal" size="18" />
+      <v-icon :icon="mdiDotsHorizontal" size="18" />
     </div>
     <div v-else-if="fetchBalanceSucceeded">{{ numberFormat(wallet.balance, 4) }}</div>
     <div v-else :class="classes.balanceError">
-      <v-icon icon="mdi-help-circle-outline" size="18" />
+      <v-icon :icon="mdiHelpCircleOutline" size="18" />
     </div>
 
     <div>
@@ -31,6 +31,8 @@ import type { PropType } from 'vue'
 import { Cryptos, FetchStatus } from '@/lib/constants'
 import CryptoIcon from '@/components/icons/CryptoIcon.vue'
 import numberFormat from '@/filters/numberFormat'
+import { mdiDotsHorizontal,  mdiHelpCircleOutline } from '@mdi/js'
+
 
 const className = 'wallet-tab'
 const classes = {
@@ -86,10 +88,12 @@ export default defineComponent({
 
     return {
       classes,
-      numberFormat,
       isRateLoaded,
       isBalanceLoading,
-      fetchBalanceSucceeded
+      fetchBalanceSucceeded,
+      mdiDotsHorizontal,
+      mdiHelpCircleOutline,
+      numberFormat
     }
   }
 })

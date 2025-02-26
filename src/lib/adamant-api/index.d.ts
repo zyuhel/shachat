@@ -90,6 +90,13 @@ export type SendMessageParams = {
 }
 export function sendMessage(params: SendMessageParams): Promise<CreateNewChatMessageResponseDto>
 
+export type EncodedFile = {
+  binary: Uint8Array
+  nonce: string
+}
+
+export function encodeFile(file: Uint8Array, params: SendMessageParams): Promise<EncodedFile>
+
 export function sendSpecialMessage(
   to: string,
   message: SendMessageParams['message']

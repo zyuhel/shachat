@@ -3,13 +3,21 @@ import { RootState } from '@/store/types'
 import { RateState } from '@/store/modules/rate/types'
 
 export const getters: GetterTree<RateState, RootState> = {
+  ratesBySeconds: (state) => (timestamp: number) => {
+    return state.historyRates[timestamp];
+  },
+  historyRateAmount: (state, { ratesBySeconds }) => (timestamp: number, amount: number, crypto: string, currency: string) => {
+    return ratesBySeconds(timestamp)[`${crypto}/${currency}`] * amount
+  },
   historyRate:
-    (state, getters, rootState) => (timestamp: number, amount: number, crypto: string) => {
+    (state, { ratesBySeconds, historyRateAmount }, rootState) => (timestamp: number, amount: number, crypto: string) => {
       let historyRate
       const currentCurrency = rootState.options.currentRate
-      const store = state.historyRates[timestamp]
-      if (store) {
-        historyRate = `${(store[`${crypto}/${currentCurrency}`] * amount).toFixed(
+
+      const calculatedRatesBySeconds = ratesBySeconds(timestamp);
+
+      if (calculatedRatesBySeconds) {
+        historyRate = `${historyRateAmount(timestamp, amount, crypto, currentCurrency).toFixed(
           2
         )} ${currentCurrency}`
       } else {

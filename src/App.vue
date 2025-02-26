@@ -1,5 +1,6 @@
 <template>
   <v-app :theme="themeName" class="application--linear-gradient">
+    <UploadAttachmentExitPrompt />
     <warning-on-addresses-dialog v-model="showWarningOnAddressesDialog" />
 
     <component :is="layout">
@@ -12,12 +13,14 @@
 import { defineComponent } from 'vue'
 import dayjs from 'dayjs'
 import WarningOnAddressesDialog from '@/components/WarningOnAddressesDialog.vue'
+import UploadAttachmentExitPrompt from '@/components/UploadAttachmentExitPrompt.vue'
 import Notifications from '@/lib/notifications'
 import { ThemeName } from './plugins/vuetify'
 
 export default defineComponent({
   components: {
-    WarningOnAddressesDialog
+    WarningOnAddressesDialog,
+    UploadAttachmentExitPrompt
   },
   data: () => ({
     showWarningOnAddressesDialog: false,

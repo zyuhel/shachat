@@ -1,11 +1,13 @@
 <template>
   <div>
-    <v-btn icon="mdi-chevron-left" :disabled="page <= 1" variant="text" @click="page--" />
-    <v-btn icon="mdi-chevron-right" :disabled="page >= pages" variant="text" @click="page++" />
+    <v-btn :icon="mdiChevronLeft" :disabled="page <= 1" variant="text" @click="page--" />
+    <v-btn :icon="mdiChevronRight" :disabled="page >= pages" variant="text" @click="page++" />
   </div>
 </template>
 
 <script>
+import { mdiChevronLeft, mdiChevronRight } from '@mdi/js'
+
 export default {
   props: {
     modelValue: {
@@ -15,6 +17,12 @@ export default {
     pages: {
       type: Number,
       required: true
+    }
+  },
+  setup() {
+    return {
+      mdiChevronLeft,
+      mdiChevronRight
     }
   },
   emits: ['update:modelValue'],

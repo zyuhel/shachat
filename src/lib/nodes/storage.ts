@@ -28,7 +28,8 @@ const defaultOptions: Options = {
   doge: defaultConfig,
   dash: defaultConfig,
   eth: defaultConfig,
-  kly: defaultConfig
+  kly: defaultConfig,
+  ipfs: defaultConfig
 }
 
 const optionsStorage = new TypedStorage(

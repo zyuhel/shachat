@@ -4,7 +4,7 @@
       <v-icon
         ref="loadingDots"
         :class="{ kmove: isLoadingSeparatorActive }"
-        icon="mdi-dots-horizontal"
+        :icon="mdiDotsHorizontal"
       />
     </div>
   </v-list-item>
@@ -57,7 +57,12 @@
           </template>
         </TransactionProvider>
       </template>
-
+      <!-- Attachment -->
+      <template v-else-if="isAttachment">
+        <v-list-item-subtitle :class="`${className}__subtitle`">
+          {{ attachmentText }}
+        </v-list-item-subtitle>
+      </template>
       <!-- Reaction -->
       <template v-else-if="isReaction">
         <v-list-item-subtitle :class="`${className}__subtitle`">
@@ -73,7 +78,7 @@
           <template v-if="isOutgoingTransaction">
             <v-icon
               v-if="transaction.isReply && isConfirmed"
-              icon="mdi-arrow-left-top"
+              :icon="mdiArrowLeftTop"
               size="15"
               class="mr-1"
             />
@@ -104,6 +109,8 @@ import { isStringEqualCI } from '@/lib/textHelpers'
 import { tsIcon, TransactionStatus as TS } from '@/lib/constants'
 import { useChatName } from '@/components/AChat/hooks/useChatName'
 import { TransactionProvider } from '@/providers/TransactionProvider'
+import { mdiArrowLeftTop, mdiDotsHorizontal } from '@mdi/js'
+
 
 const className = 'chat-brief'
 
@@ -162,8 +169,22 @@ export default defineComponent({
     const chatName = useChatName(contactId, true)
 
     const isTransferType = computed(
-      () => props.transaction.type !== 'message' && props.transaction.type !== 'reaction'
+      () =>
+        props.transaction.type !== 'message' &&
+        props.transaction.type !== 'reaction' &&
+        props.transaction.type !== 'attachment'
     )
+    const isAttachment = computed(() => props.transaction.type === 'attachment')
+    const attachmentText = computed(() => {
+      if (!isAttachment.value) return ''
+      const filesCount = props.transaction.asset.files.length
+
+      if (props.transaction.message) {
+        return `[${t('chats.file', filesCount)}]: ${props.transaction.message}`
+      }
+
+      return `[${t('chats.file', filesCount)}]`
+    })
     const isReaction = computed(() => props.transaction.type === 'reaction')
 
     const reactedText = computed(() => {
@@ -219,6 +240,7 @@ export default defineComponent({
     return {
       className,
       chatName,
+      t,
       createdAt,
       currency,
       formatDate,
@@ -227,6 +249,8 @@ export default defineComponent({
       isIncomingTransaction,
       isNewChat,
       isOutgoingTransaction,
+      isAttachment,
+      attachmentText,
       isReaction,
       isTransferType,
       isWelcomeChat,
@@ -235,6 +259,8 @@ export default defineComponent({
       reactedText,
       admStatusIcon,
       transactionDirection,
+      mdiArrowLeftTop,
+      mdiDotsHorizontal,
       tsIcon
     }
   }

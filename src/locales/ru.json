@@ -16,6 +16,13 @@
     "incorrect_address": "Неправильный ADM-адрес",
     "no_public_key": "Этот адрес еще не использовался. С ним нельзя начать чат",
     "unable_to_retrieve_no_public_key": "`Не могу прочитать сообщение: нет публичного ключа собеседника`",
+    "max_files": "Вы можете загрузить максимум {count} файл(ов)",
+    "max_file_size": "Максимальный размер файла: 10MB",
+    "file": "0 файлов | 1 файл | {n} файла | {n} файлов",
+    "files": "файл(ов)",
+    "file_loading_error": "Не удалось загрузить файл",
+    "image_loading_error": "Не удалось загрузить изображение",
+    "file_not_found": "Файл не найден",
     "me": "Я",
     "message": "Введите сообщение",
     "message_rejected": "Сообщение отклонено",
@@ -99,8 +106,9 @@
   "error": "Ошибка",
   "errors": {
     "something_went_wrong": "Что-то пошло не так. Детали ошибки в консоли",
-    "all_nodes_offline": "Все {crypto} ноды недоступны. Попробуйте позже",
-    "all_nodes_disabled": "Нет активных узлов {crypto}. Включите хотя бы один"
+    "all_nodes_offline": "Нет доступных нод {crypto}. Посмотрите список узлов",
+    "all_adm_nodes_offline": "Нет доступных нод ADM, чтобы отправить сообщение. Посмотрите список узлов",
+    "all_nodes_disabled": "Нет активных {crypto} нод. Включите хотя бы одну"
   },
   "home": {
     "balance": "Баланс",
@@ -123,7 +131,8 @@
     "show_qr_code": "Показать QR-код",
     "stake_and_earn_btn": "Застейкать и заработать",
     "wallet": "кошелек",
-    "wallet_crypto": "Кошелек {crypto}"
+    "wallet_crypto": "Кошелек {crypto}",
+    "explorer": "Посмотреть в Explorer'е"
   },
   "warning_on_addresses": {
     "warning": "Внимание",
@@ -192,7 +201,8 @@
     "tabs": {
       "adm_nodes": "Узлы ADM",
       "coin_nodes": "Крипто-ноды",
-      "service_nodes": "Крипто-сервисы"
+      "service_nodes": "Крипто-сервисы",
+      "ipfs_nodes": "IPFS ноды"
     },
     "unsupported": "Не поддерживается",
     "unsupported_reason_protocol": "HTTP не поддерживается",

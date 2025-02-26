@@ -38,10 +38,8 @@
               {{ t('transaction.status') }}
               <v-icon
                 v-if="statusUpdatable || rotateAnimation"
-                :class="{
-                  [`${className}__update-status-icon--rotate`]: rotateAnimation
-                }"
-                icon="mdi-refresh"
+                :class="{ [`${className}__update-status-icon--rotate`]: rotateAnimation }"
+                :icon="mdiRefresh"
                 size="20"
                 @click="updateStatus()"
               />
@@ -56,7 +54,7 @@
           >
             <v-icon
               v-if="transactionStatus === 'INVALID'"
-              icon="mdi-alert-outline"
+              :icon="mdiAlertOutline"
               size="20"
               style="color: #f8a061 !important"
             />
@@ -71,7 +69,11 @@
         <v-divider />
 
         <TransactionListItem :title="t('transaction.date')">
-          {{ transaction?.timestamp ? formatDate(transaction.timestamp) : placeholder }}
+          {{
+            confirmations && transaction?.timestamp
+              ? formatDate(transaction.timestamp)
+              : placeholder
+          }}
         </TransactionListItem>
 
         <v-divider />
@@ -83,7 +85,7 @@
         <v-divider />
 
         <TransactionListItem :title="t('transaction.commission')">
-          {{ typeof fee === 'number' ? formatAmount(fee) + ` ${crypto}` : placeholder }}
+          {{ calculatedFee }}
         </TransactionListItem>
 
         <v-divider />
@@ -132,7 +134,7 @@
           :title="t('transaction.explorer')"
           @click="openInExplorer"
         >
-          <v-icon icon="mdi-chevron-right" size="20" />
+          <v-icon :icon="mdiChevronRight" size="20" />
         </TransactionListItem>
 
         <v-divider v-if="partner && !ifComeFromChat" />
@@ -142,7 +144,7 @@
           :title="hasMessages ? t('transaction.continueChat') : t('transaction.startChat')"
           @click="openChat"
         >
-          <v-icon :icon="hasMessages ? 'mdi-comment' : 'mdi-comment-outline'" size="20" />
+          <v-icon :icon="hasMessages ? mdiComment : mdiCommentOutline" size="20" />
         </TransactionListItem>
       </v-list>
     </container>
@@ -173,23 +175,21 @@ import AppToolbarCentered from '@/components/AppToolbarCentered.vue'
 import TransactionListItem from './TransactionListItem.vue'
 import { timestampInSec } from '@/filters/helpers'
 import { formatDate } from '@/lib/formatters'
+import {
+  mdiAlertOutline,
+  mdiChevronRight,
+  mdiComment,
+  mdiCommentOutline,
+  mdiRefresh
+} from '@mdi/js'
 
 const className = 'transaction-view'
 
 export default defineComponent({
-  components: {
-    AppToolbarCentered,
-    TransactionListItem
-  },
+  components: { AppToolbarCentered, TransactionListItem },
   props: {
-    crypto: {
-      type: String as PropType<CryptoSymbol>,
-      required: true
-    },
-    explorerLink: {
-      type: String,
-      required: true
-    },
+    crypto: { type: String as PropType<CryptoSymbol>, required: true },
+    explorerLink: { type: String, required: true },
     transaction: {
       type: Object as PropType<
         AnyCoinTransaction | DecodedChatMessageTransaction | PendingTransaction
@@ -235,6 +235,9 @@ export default defineComponent({
     },
     recipientFormatted: {
       type: String
+    },
+    feeCrypto: {
+      type: String
     }
   },
   emits: ['refetch-status'],
@@ -274,7 +277,7 @@ export default defineComponent({
       if (!transaction.value) return
 
       return store.getters['rate/historyRate'](
-        timestampInSec(props.crypto, transaction.value.timestamp),
+        calculatedTimestampInSec.value,
         transaction.value.amount,
         props.crypto
       )
@@ -285,14 +288,44 @@ export default defineComponent({
       return store.getters['rate/rate'](transaction.value.amount, props.crypto)
     })
 
+    const calculatedTimestampInSec = computed(() => {
+      if (!transaction.value) {
+        return null;
+      }
+
+      return timestampInSec(props.crypto, transaction.value.timestamp!)
+    })
+
+    const calculatedFee = computed(() => {
+      const commissionTokenLabel = (props.feeCrypto ?? props.crypto) as CryptoSymbol;
+
+      const { cryptoTransferDecimals, decimals } = CryptosInfo[commissionTokenLabel]
+
+      const tokenFee = typeof props.fee === 'number'
+        ? `${formatAmount(props.fee, cryptoTransferDecimals ?? decimals)} ${commissionTokenLabel}`
+        : placeholder.value;
+
+      if (!props.fee || !calculatedTimestampInSec.value) return tokenFee;
+
+
+      const commissionUsdAmount = store.getters['rate/historyRate'](
+        calculatedTimestampInSec.value,
+        props.fee,
+        commissionTokenLabel,
+      );
+
+
+      if (!commissionUsdAmount) return tokenFee;
+
+      return tokenFee  + ` ~${commissionUsdAmount}`;
+    });
+
+
     const handleCopyToClipboard = (text?: string) => {
       if (!text) return
 
       copyToClipboard(text)
-      store.dispatch('snackbar/show', {
-        message: t('home.copied'),
-        timeout: 2000
-      })
+      store.dispatch('snackbar/show', { message: t('home.copied'), timeout: 2000 })
     }
 
     const openInExplorer = () => {
@@ -316,24 +349,24 @@ export default defineComponent({
     }
 
     const getHistoryRates = () => {
-      if (!transaction.value) return
+      if (!calculatedTimestampInSec.value) return
 
       store.dispatch('rate/getHistoryRates', {
-        timestamp: timestampInSec(props.crypto, transaction.value.timestamp!)
+        timestamp: calculatedTimestampInSec.value
       })
     }
 
     watch(
-      () => props.transaction,
+      calculatedTimestampInSec,
       () => {
         getHistoryRates()
       },
       { immediate: true }
     )
 
-    const formatAmount = (amount: number) => {
+    const formatAmount = (amount: number, decimals = CryptosInfo[props.crypto].decimals) => {
       return BigNumber(amount)
-        .decimalPlaces(CryptosInfo[props.crypto].decimals, BigNumber.ROUND_DOWN)
+        .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
         .toFixed()
     }
 
@@ -355,7 +388,13 @@ export default defineComponent({
       statusUpdatable,
       historyRate,
       rate,
-      formatAmount
+      calculatedFee,
+      formatAmount,
+      mdiAlertOutline,
+      mdiChevronRight,
+      mdiComment,
+      mdiCommentOutline,
+      mdiRefresh
     }
   }
 })

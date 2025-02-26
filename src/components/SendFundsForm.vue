@@ -12,7 +12,7 @@
         variant="underlined"
         :items="cryptoList"
         :disabled="addressReadonly"
-        :menu-icon="addressReadonly ? '' : 'mdi-menu-down'"
+        :menu-icon="addressReadonly ? '' : mdiMenuDown"
       />
 
       <v-text-field
@@ -35,7 +35,7 @@
         <template v-if="!addressReadonly" #append-inner>
           <v-menu :offset-overflow="true" :offset-y="false" left eager>
             <template #activator="{ props }">
-              <v-icon v-bind="props" icon="mdi-dots-vertical" />
+              <v-icon v-bind="props" :icon="mdiDotsVertical" />
             </template>
             <v-list>
               <v-list-item @click="showQrcodeScanner = true">
@@ -73,7 +73,7 @@
         <template #append-inner>
           <v-menu :offset-overflow="true" :offset-y="false" left>
             <template #activator="{ props }">
-              <v-icon v-bind="props" icon="mdi-dots-vertical" />
+              <v-icon v-bind="props" :icon="mdiDotsVertical" />
             </template>
             <v-list>
               <v-list-item
@@ -189,7 +189,7 @@
 <script>
 import { adm } from '@/lib/nodes'
 import klyIndexer from '@/lib/nodes/kly-indexer'
-import { AllNodesDisabledError, AllNodesOfflineError } from '@/lib/nodes/utils/errors'
+import { AllNodesDisabledError, AllNodesOfflineError, NoInternetConnectionError } from '@/lib/nodes/utils/errors'
 import { PendingTransactionError } from '@/lib/pending-transactions'
 import axios from 'axios'
 import { nextTick } from 'vue'
@@ -198,6 +198,8 @@ import QrcodeCapture from '@/components/QrcodeCapture.vue'
 import QrcodeScannerDialog from '@/components/QrcodeScannerDialog.vue'
 import get from 'lodash/get'
 import { BigNumber } from 'bignumber.js'
+import * as transactions from '@klayr/transactions'
+import { KLY_DECIMALS } from '@/lib/klayr/klayr-constants'
 
 import {
   INCREASE_FEE_MULTIPLIER,
@@ -211,10 +213,11 @@ import {
   CryptosInfo,
   isTextDataAllowed,
   MessageType,
-  Fees
+  Fees,
+  Symbols
 } from '@/lib/constants'
 
-import { parseURIasAIP } from '@/lib/uri'
+import { parseURI } from '@/lib/uri'
 import { sendMessage } from '@/lib/adamant-api'
 import { replyMessageAsset } from '@/lib/adamant-api/asset'
 
@@ -226,6 +229,11 @@ import WarningOnPartnerAddressDialog from '@/components/WarningOnPartnerAddressD
 import { isStringEqualCI } from '@/lib/textHelpers'
 import { formatSendTxError } from '@/lib/txVerify'
 import { AllCryptos } from '@/lib/constants/cryptos'
+
+import { MAX_UINT64 } from '@klayr/validator'
+
+import { mdiDotsVertical, mdiMenuDown } from '@mdi/js'
+
 
 /**
  * @returns {string | boolean}
@@ -275,6 +283,12 @@ export default {
     }
   },
   emits: ['send', 'error'],
+  setup() {
+    return {
+      mdiDotsVertical,
+      mdiMenuDown
+    }
+  },
   data: () => ({
     currency: '',
     address: '',
@@ -310,6 +324,7 @@ export default {
     increaseFee: false,
     showWarningOnPartnerAddressDialog: false,
     warningOnPartnerInfo: {},
+    klayrOptionalMessage: '',
 
     // Account exists check
     // Currently works only with KLY
@@ -526,7 +541,15 @@ export default {
           () =>
             isErc20(this.currency)
               ? this.ethBalance >= this.transferFee || this.$t('transfer.error_not_enough_eth_fee')
-              : true
+              : true,
+          (v) => {
+            const isKlyTransfer = this.currency === Cryptos.KLY
+            if (!isKlyTransfer) return true
+            const isKlyTransferAllowed =
+              this.transferFee &&
+              transactions.convertklyToBeddows(v.toFixed(KLY_DECIMALS)) < MAX_UINT64
+            return isKlyTransferAllowed || this.$t('transfer.error_incorrect_amount')
+          }
         ]
       }
     },
@@ -549,7 +572,7 @@ export default {
         this.$store.state.rate.rates[`${this.transferFeeCurrency}/${this.currentCurrency}`]
 
       if (currentRate === undefined) {
-        return ''
+        return Symbols.HOURGLASS
       }
 
       const feeRate = (this.transferFeeFixed * currentRate).toFixed(2)
@@ -560,7 +583,7 @@ export default {
       const currentRate = this.$store.state.rate.rates[`${this.currency}/${this.currentCurrency}`]
 
       if (currentRate === undefined) {
-        return ''
+        return Symbols.HOURGLASS
       }
 
       const amountRate = (this.finalAmountFixed * currentRate).toFixed(2)
@@ -671,7 +694,7 @@ export default {
      */
     onPasteURIAddress(e) {
       const data = e.clipboardData.getData('text')
-      const address = parseURIasAIP(data).address
+      const address = parseURI(data).address
 
       if (validateAddress(this.currency, address)) {
         e.preventDefault()
@@ -687,7 +710,7 @@ export default {
      */
     onPasteURIComment(e) {
       nextTick(() => {
-        const params = parseURIasAIP(e.target.value).params
+        const params = parseURI(e.target.value).params
 
         if (params.message) {
           this.comment = params.message
@@ -700,17 +723,19 @@ export default {
      * @param {string} uri URI
      */
     onScanQrcode(uri) {
-      const recipient = parseURIasAIP(uri)
-
-      this.cryptoAddress = ''
-      if (validateAddress(this.currency, recipient.address)) {
-        this.cryptoAddress = recipient.address
-        if (recipient.params.amount) {
-          const amount = formatNumber(this.exponent)(recipient.params.amount)
-
+      const recipient = parseURI(uri)
+      const { params, address, crypto } = recipient
+      const isValidAddress = validateAddress(this.currency, address)
+      if (isValidAddress) {
+        this.cryptoAddress = address
+        if (params.amount && !this.amountString) {
+          const amount = formatNumber(this.exponent)(params.amount)
           if (Number(amount) <= this.maxToTransfer) {
             this.amountString = amount
           }
+        }
+        if (crypto === Cryptos.KLY) {
+          this.textData = params.reference ? params.reference : ''
         }
       } else {
         this.$emit('error', this.$t('transfer.error_incorrect_address', { crypto: this.currency }))
@@ -752,9 +777,13 @@ export default {
           } else if (/Invalid JSON RPC Response/i.test(message)) {
             message = this.$t('transfer.error_unknown')
           } else if (error instanceof AllNodesOfflineError) {
-            message = this.$t('errors.all_nodes_offline', {
-              crypto: error.nodeLabel.toUpperCase()
-            })
+            if (this.currency !== Cryptos.ADM && error.nodeLabel === 'adm') {
+              message = this.$t('errors.all_adm_nodes_offline')
+            } else {
+              message = this.$t('errors.all_nodes_offline', {
+                crypto: error.nodeLabel.toUpperCase()
+              })
+            }
           } else if (error instanceof AllNodesDisabledError) {
             message = this.$t('errors.all_nodes_disabled', {
               crypto: error.nodeLabel.toUpperCase()
@@ -763,6 +792,8 @@ export default {
             message = this.$t('transfer.error_pending_transaction', {
               crypto: error.crypto
             })
+          } else if (error instanceof NoInternetConnectionError) {
+            message = this.$t('connection.offline')
           }
           this.$emit('error', message)
         })
@@ -773,6 +804,10 @@ export default {
         })
     },
     async sendFunds() {
+      if (!navigator.onLine) {
+        throw new NoInternetConnectionError()
+      }
+
       if (this.currency === Cryptos.ADM) {
         let promise
         // 1. if come from Chat then sendMessage

@@ -5,7 +5,7 @@
         {{ isMe ? $t('chats.my_qr_code') : $t('chats.partner_info') }}
         <v-spacer />
         <v-btn variant="text" icon class="close-icon" :size="36" @click="show = false">
-          <v-icon icon="mdi-close" :size="24" />
+          <v-icon :icon="mdiClose" :size="24" />
         </v-btn>
       </v-card-title>
       <v-divider class="a-divider" />
@@ -39,6 +39,7 @@ import { generateURI } from '@/lib/uri'
 import validateAddress from '@/lib/validateAddress'
 import { isStringEqualCI } from '@/lib/textHelpers'
 import IconBox from '@/components/icons/IconBox.vue'
+import { mdiClose } from '@mdi/js'
 
 export default {
   components: {
@@ -67,6 +68,11 @@ export default {
     }
   },
   emits: ['update:modelValue'],
+  setup() {
+    return {
+      mdiClose
+    }
+  },
   data() {
     return {
       className: 'partner-info-dialog',

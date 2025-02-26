@@ -5,7 +5,7 @@
       [classes.icon]: true,
       [classes.iconGood]: !originalVoted
     }"
-    :icon="originalVoted ? 'mdi-thumb-up' : 'mdi-thumb-up-outline'"
+    :icon="originalVoted ? mdiThumbUp : mdiThumbUpOutline"
     size="large"
     @click="handleDownVote"
   />
@@ -16,7 +16,7 @@
       [classes.icon]: true,
       [classes.iconDanger]: originalVoted
     }"
-    :icon="originalVoted ? 'mdi-thumb-down-outline' : 'mdi-thumb-up-outline'"
+    :icon="originalVoted ? mdiThumbDownOutline : mdiThumbUpOutline"
     size="large"
     @click="handleUpVote"
   />
@@ -25,6 +25,9 @@
 <script>
 import { computed, toRefs } from 'vue'
 import { useStore } from 'vuex'
+
+import { mdiThumbUp, mdiThumbUpOutline, mdiThumbDownOutline } from '@mdi/js'
+
 
 const className = 'delegate-vote-checkbox'
 const classes = {
@@ -63,7 +66,10 @@ export default {
       voted,
       handleUpVote,
       handleDownVote,
-      classes
+      classes,
+      mdiThumbDownOutline,
+      mdiThumbUp,
+      mdiThumbUpOutline
     }
   }
 }
@@ -78,28 +84,35 @@ export default {
   &__icon {
     font-size: 24px !important;
     height: 24px !important;
-
-    &--good {
-      color: map-get($adm-colors, 'good');
-    }
-
-    &--danger {
-      color: map-get($adm-colors, 'danger');
-    }
   }
 }
 
+/** Themes **/
 .v-theme--light {
   .delegate-vote-checkbox {
     &__icon {
       color: map-get($adm-colors, 'muted');
+      &--good {
+        color: map-get($adm-colors, 'good');
+      }
+
+      &--danger {
+        color: map-get($adm-colors, 'danger');
+      }
     }
   }
 }
 
-.dark {
+.v-theme--dark {
   .delegate-vote-checkbox {
     &__icon {
+      &--good {
+        color: map-get($adm-colors, 'good');
+      }
+      
+      &--danger {
+        color: map-get($adm-colors, 'danger');
+      }
     }
   }
 }

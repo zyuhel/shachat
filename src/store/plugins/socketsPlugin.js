@@ -1,6 +1,7 @@
 import socketClient from '@/lib/sockets'
 import { decodeChat, getPublicKey } from '@/lib/adamant-api'
 import { isStringEqualCI } from '@/lib/textHelpers'
+import { MessageType } from '@/lib/constants'
 
 function subscribe(store) {
   socketClient.subscribe('newMessage', (transaction) => {
@@ -14,7 +15,10 @@ function subscribe(store) {
       // All transactions we get via socket are shown in chats, including ADM direct transfers
       // Currently, we don't update confirmations for direct transfers, see getChats() in adamant-api.js
       // So we'll update confirmations in getTransactionStatus()
-      store.dispatch('chat/pushMessages', [decoded])
+
+      if (transaction.asset?.chat?.type !== MessageType.SIGNAL_MESSAGE) {
+        store.dispatch('chat/pushMessages', [decoded])
+      }
     })
   })
 }

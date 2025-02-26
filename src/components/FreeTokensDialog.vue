@@ -15,7 +15,7 @@
 
       <v-col cols="12" class="text-center pa-0">
         <v-btn :class="[`${className}__btn-free-tokens`, 'a-btn-primary']" @click="getFreeTokens()">
-          <v-icon :class="`${className}__btn-icon`" icon="mdi-gift" />
+          <v-icon :class="`${className}__btn-icon`" :icon="mdiGift" />
           <div :class="`${className}__btn-text`">
             {{ $t('home.free_adm_btn') }}
           </div>
@@ -33,6 +33,7 @@
 
 <script>
 import { websiteUriToOnion } from '@/lib/uri'
+import { mdiGift } from '@mdi/js'
 
 export default {
   props: {
@@ -42,6 +43,11 @@ export default {
     }
   },
   emits: ['update:modelValue'],
+  setup() {
+    return {
+      mdiGift
+    }
+  },
   computed: {
     className: () => 'free-tokens-dialog',
     show: {
@@ -54,6 +60,7 @@ export default {
     }
   },
   methods: {
+
     getFreeTokens() {
       const link = websiteUriToOnion(
         this.$t('home.free_tokens_link') + '?wallet=' + this.$store.state.address
